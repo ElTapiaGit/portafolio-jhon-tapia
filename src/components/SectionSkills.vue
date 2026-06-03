@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue' // , nextTick
+import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import * as d3 from 'd3'
 
 const canvasRef = ref(null)
@@ -60,9 +60,9 @@ let nodes = []
 let links = []
 let ctx = null
 const imageCache = {}
-let resizeObserver = null // Para escuchar cambios de tamaño
+let resizeObserver = null // escuchar cambios de tamaño
+let intersectionObserver = null // observador de visibilidad para liberar CPU
 
-/* promesa para optimar imagenes antes del dibujo */ 
 function precargarIconos() {
   nodosData.forEach(d => {
     const img = new Image()
@@ -73,9 +73,12 @@ function precargarIconos() {
 
 function initCanvas() {
   if (!canvasRef.value) return
-  // dimensionamientos logicos y fisicas
-  width = canvasRef.value.clientWidth
-  height = canvasRef.value.clientHeight || 520
+  // guardamos las dimensionamientos logicos y fisicas en variables para evitar lecturas repetidas
+  const container = canvasRef.value.parentElement
+  if (!container) return 
+
+  width = container.clientWidth
+  height = container.clientHeight || 480 // tamano minimo contenedor para evitar colapsos
   canvasRef.value.width = width
   canvasRef.value.height = height
   ctx = canvasRef.value.getContext('2d')
@@ -83,12 +86,12 @@ function initCanvas() {
   nodes = nodosData.map(d => Object.create(d))
   links = linksData.map(d => Object.create(d))
 
-  // detener simulacion anterior si existe (pa no tener multiples simulaciones cooriendo en caso de remount)
+  // pa no tener multiples simulaciones cooriendo en caso de remount
   if (simulation) simulation.stop()
 
   simulation = d3.forceSimulation(nodes)
-    .force('charge', d3.forceManyBody().strength(-200))  //repulsion entre nodos para que no se amontonen
-    .force('link', d3.forceLink(links).id(d => d.id).distance(120))
+    .force('charge', d3.forceManyBody().strength(-120))  //repulsion entre nodos para que no se amontonen
+    .force('link', d3.forceLink(links).id(d => d.id).distance(100))
     .force('collide', d3.forceCollide().radius(45).iterations(2))
     .force('center', d3.forceCenter(width / 2, height / 2))
     .alphaTarget(0.02)  // efecto flotabilidad inicial
@@ -100,7 +103,7 @@ function initCanvas() {
       .subject(objetoDrag)
       .on('start', iniciarDrag)
       .on('drag', arrastrar)
-      .on('end', soltarDrag))
+      .on('end', soltarDrag))  
 }
 
 function dibujar() {
@@ -188,7 +191,7 @@ function soltarDrag(event) {
 
 function aplicarFiltro(grupo) {
   filtroActivo.value = grupo
-  if (isMobile.value) return
+  if (isMobile.value || !simulation) return
 
   // fisica de filtrado suavemente
   simulation.force('center', null) // quitamos el centro estricto
@@ -237,7 +240,7 @@ onMounted(() => {
   if (!isMobile.value) {
     initCanvas()
 
-    // 2. CORRECCIÓN: ResizeObserver para recalcular física si redimensionan la ventana
+    // manejo de rendimiento con desvinculacion geometrica
     if (canvasRef.value && canvasRef.value.parentElement) {
       resizeObserver = new ResizeObserver(() => {
         // Debounce simple para no saturar el resize
@@ -247,6 +250,24 @@ onMounted(() => {
       })
       resizeObserver.observe(canvasRef.value.parentElement)
     }
+
+    //intersection observer, detiene el d3 cuando sale de la pantalla para ahorrar CPU
+    if (canvasRef.value) {
+      intersectionObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (simulation) {
+            if (entry.isIntersecting) {
+              // devuelve la energia a los nodos al entrar
+              simulation.alphaTarget(0.02).restart()
+            } else {
+              // congela por completo los calculos matematicos al salir de pantalla para ahorrar CPU
+              simulation.stop()
+            }
+          }
+        })
+      }, {threshold: 0.1}) //se activa cuando almenos el 10% del canvas es visible
+      intersectionObserver.observe(canvasRef.value)
+    }
   }
 })
 
@@ -254,12 +275,12 @@ onUnmounted(() => {
   if (simulation) simulation.stop()
   if (mobileQuery) mobileQuery.removeEventListener('change', handleMediaChange)
   if (resizeObserver) resizeObserver.disconnect()
+  if (intersectionObserver) intersectionObserver.disconnect()
 })
 </script>
 
 <template>
-  <section
-    id="habilidades"
+  <section id="habilidades"
     class="relative w-full bg-dark overflow-hidden"
     aria-label="Sección — Habilidades Técnicas"
   >
@@ -281,9 +302,9 @@ onUnmounted(() => {
           @click="aplicarFiltro(f.id)"
           class="px-4 py-2 text-xs font-mono tracking-wide border rounded transition-colors"
           :style="{
-            background: filtroActivo === f.id ? 'rgba(37,99,235,0.12)' : 'transparent',
-            borderColor: filtroActivo === f.id ? '#2563EB' : '#2E3650',
-            color: filtroActivo === f.id ? '#2563EB' : 'var(--text-muted)',
+            background: filtroActivo === f.id ? 'var(--color-primary-dim)' : 'transparent',
+            borderColor: filtroActivo === f.id ? 'var(--color-primary)' : 'var(--color-dark-400)',
+            color: filtroActivo === f.id ? 'var(--color-primary)' : 'var(--text-muted)',
           }"
         >
           {{ f.etiqueta }}
@@ -294,7 +315,7 @@ onUnmounted(() => {
       <div v-if="!isMobile" class="flex-grow relative w-full" style="min-height: 480px;">
         <canvas
           ref="canvasRef"
-          class="w-full h-full cursor-grab active:cursor-grabbing"
+          class="w-full h-8 cursor-grab active:cursor-grabbing"
           style="min-height: 480px;"
         ></canvas>
       </div>
@@ -307,8 +328,8 @@ onUnmounted(() => {
           class="flex flex-col items-center justify-center gap-2 p-3 border rounded-lg transition-opacity duration-200"
           :style="{
             opacity: filtroActivo === 0 || filtroActivo === nodo.group ? '1' : '0.18',
-            borderColor: filtroActivo === 0 || filtroActivo === nodo.group ? '#2563EB50' : '#2E3650',
-            background: filtroActivo === 0 || filtroActivo === nodo.group ? 'rgba(37,99,235,0.06)' : '#161B2A',
+            borderColor: filtroActivo === 0 || filtroActivo === nodo.group ? 'var(--color-primary)' : 'var(--color-dark-400)',
+            background: filtroActivo === 0 || filtroActivo === nodo.group ? 'var(--color-primary-dim)' : 'var(--color-dark-700)',
           }"
         >
           <img :src="nodo.icono" :alt="nodo.label" class="w-8 h-8 object-contain" />
@@ -317,9 +338,9 @@ onUnmounted(() => {
       </div>
 
       <!-- Habilidades Blandas — Matriz Estatica -->
-      <div class="mt-10 pt-6 border-t border-slate-800">
+      <div class="mt-10 pt-6 border-t border-dark-400">
         <div class="flex items-center gap-2 mb-4">
-          <span class="w-2 h-2 rounded-full bg-green-500/70 animate-pulse"></span>
+          <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
           <div class="text-xs font-mono tracking-widest uppercase" style="color: var(--text-muted);">
             Habilidades Blandas
           </div>

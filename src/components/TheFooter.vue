@@ -27,7 +27,7 @@ async function enviarFormulario() {
 
   if (!nombre.trim() || !email.trim() || !mensaje.trim()) {
     estado.value = 'ERROR'
-    logTerminal.value = [{ tipo: 'error', msg: '> 422 ERROR: ERROR: Campos incompletos o vacíos' }]
+    logTerminal.value = [{ tipo: 'error', msg: '> 422 ERROR: Campos incompletos o vacíos' }]
     return
   }
 
@@ -83,8 +83,7 @@ onMounted(() => {
 
 <template>
   <footer id="contacto"
-    class="relative w-full border-t border-slate-800"
-    style="background: #0E1118;"
+    class="relative w-full border-t border-dark-400 bg-dark"
     aria-label="Sección — Contacto y Pie de Página"
   >
     <div class="absolute inset-0 bg-grid pointer-events-none opacity-10" />
@@ -105,8 +104,8 @@ onMounted(() => {
         <div class="flex flex-col gap-6">
 
           <!-- Linea de metodo y endpoint -->
-          <div class="flex items-center gap-3 font-mono text-sm pb-4 border-b border-slate-800">
-            <span class="px-2 py-0.5 rounded text-xs font-bold bg-green-900/40 text-green-400 border border-green-900">
+          <div class="flex items-center gap-3 font-mono text-sm pb-4 border-b border-dark-400">
+            <span class="px-2 py-0.5 rounded text-xs font-bold bg-emerald-500/10 text-emerald-500 border border-emerald-500/30">
               {{ formulario.metodo }}
             </span>
             <span style="color: var(--text-muted);">{{ formulario.endpoint }}</span>
@@ -114,37 +113,40 @@ onMounted(() => {
 
           <!-- Campo: Nombre -->
           <div class="flex flex-col gap-1.5">
-            <label class="text-sm font-mono tracking-widest font-bold" style="color: var(--text-base);">"nombre"</label>
+            <label for="nombreInput" class="text-sm font-mono tracking-widest font-bold" style="color: var(--text-base);">"nombre"</label>
             <input
+              id="nombreInput"
               v-model="formulario.cuerpo.nombre"
               type="text"
               placeholder="Tu nombre completo..."
-              class="w-full bg-transparent border-b text-sm pb-2 outline-none placeholder-slate-700 transition-colors duration-300 focus:border-blue-600"
-              style="border-color: #2E3650; color: var(--text-bright);"
+              class="w-full bg-transparent border-b border-dark-400 text-sm pb-2 outline-none placeholder-slate-700 focus:border-primary"
+              style="color: var(--text-bright);"
             />
           </div>
 
           <!-- Campo: Email -->
           <div class="flex flex-col gap-1.5">
-            <label class="text-sm font-mono tracking-widest font-bold" style="color: var(--text-base);">"email"</label>
+            <label for="emailInput" class="text-sm font-mono tracking-widest font-bold" style="color: var(--text-base);">"email"</label>
             <input
+              id="emailInput"
               v-model="formulario.cuerpo.email"
               type="email"
               placeholder="tu@correo.com"
-              class="w-full bg-transparent border-b text-sm pb-2 outline-none placeholder-slate-700 transition-colors duration-300 focus:border-blue-600"
-              style="border-color: #2E3650; color: var(--text-bright);"
+              class="w-full bg-transparent border-b border-dark-400 text-sm pb-2 outline-none placeholder-slate-700 focus:border-primary"
+              style="color: var(--text-bright);"
             />
           </div>
 
           <!-- Campo: Mensaje -->
           <div class="flex flex-col gap-1.5">
-            <label class="text-sm font-mono tracking-widest font-bold" style="color: var(--text-base);">"mensaje"</label>
+            <label for="mensajeInput" class="text-sm font-mono tracking-widest font-bold" style="color: var(--text-base);">"mensaje"</label>
             <textarea
+              id="mensajeInput"
               v-model="formulario.cuerpo.mensaje"
               rows="4"
               placeholder="Describe tu proyecto o consulta..."
-              class="w-full bg-transparent border-b text-sm pb-2 outline-none placeholder-slate-700 transition-colors duration-300 focus:border-blue-600 resize-none"
-              style="border-color: #2E3650; color: var(--text-bright);"
+              class="w-full bg-transparent border-b border-dark-400 text-sm pb-2 outline-none placeholder-slate-700  focus:border-primary resize-none"
+              style="color: var(--text-bright);"
             ></textarea>
           </div>
 
@@ -160,16 +162,15 @@ onMounted(() => {
           <!-- Banner de respuesta en movil -->
           <div
             v-if="isMobile && logTerminal.length > 0"
-            class="mt-2 p-3 rounded-lg border font-mono text-xs"
+            class="mt-2 p-2 rounded-lg border border-dark-400 font-mono text-xs bg-dark-800"
             :style="{
-              background: '#0E1118',
-              borderColor: estado === 'ENVIADO' ? '#166534' : '#7F1D1D',
+              borderColor: estado === 'ENVIADO' ? '#10B981' : estado === 'ERROR' ? '#EF4444' : 'var(--color-dark-400)',
             }"
           >
             <div
               v-for="(log, i) in logTerminal"
               :key="i"
-              :style="{ color: log.tipo === 'error' ? '#F87171' : log.tipo === 'exito' ? '#4ADE80' : 'var(--text-muted)' }"
+              :class="log.tipo === 'error' ? 'text-red-500' : log.tipo === 'exito' ? 'text-emerald-500' : 'text-muted'"
             >
               {{ log.msg }}
             </div>
@@ -180,39 +181,40 @@ onMounted(() => {
         <div v-if="!isMobile" class="flex flex-col gap-4">
 
           <!-- Barra de título del IDE -->
-          <div class="flex items-center gap-2 pb-3 border-b border-slate-800">
+          <div class="flex items-center gap-2 pb-3 border-b border-dark-400">
             <span class="w-2.5 h-2.5 rounded-full bg-red-500/60"></span>
-            <span class="w-2.5 h-2.5 rounded-full bg-yellow-500/60"></span>
-            <span class="w-2.5 h-2.5 rounded-full bg-green-500/60"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-amber-500/80"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500/80"></span>
             <span class="ml-3 text-xs font-mono" style="color: var(--text-muted);">REQUEST_PAYLOAD.json</span>
           </div>
 
           <!-- Visor JSON en tiempo real -->
-          <pre class="rounded-xl p-5 text-xs leading-relaxed font-mono overflow-x-auto border border-slate-800 flex-grow"
-            style="background: #111520; min-height: 200px;"><span style="color: #F59E0B;">{</span>
-  <span style="color: #93C5FD;">"endpoint"</span>: <span style="color: #86EFAC;">"{{ formulario.endpoint }}"</span>,
-  <span style="color: #93C5FD;">"metodo"</span>: <span style="color: #86EFAC;">"{{ formulario.metodo }}"</span>,
-  <span style="color: #93C5FD;">"cuerpo"</span>: <span style="color: #F59E0B;">{</span>
-    <span style="color: #93C5FD;">"nombre"</span>: <span style="color: #86EFAC;">"{{ formulario.cuerpo.nombre }}"</span>,
-    <span style="color: #93C5FD;">"email"</span>: <span style="color: #86EFAC;">"{{ formulario.cuerpo.email }}"</span>,
-    <span style="color: #93C5FD;">"mensaje"</span>: <span style="color: #86EFAC;">"{{ formulario.cuerpo.mensaje.replace(/\n/g, '\\n') }}"</span>
-  <span style="color: #F59E0B;">}</span>
-<span style="color: #F59E0B;">}</span>
+          <pre class="rounded-xl p-5 text-xs leading-relaxed font-mono overflow-x-auto border border-dark-400 flex-grow bg-dark-800"
+            style="min-height: 200px;"><span style="color: var(--color-accent);">{</span>
+    <span class="text-primary font-semibold">"endpoint"</span>: <span class="text-emerald-500 font-medium">"{{ formulario.endpoint }}"</span>,
+    <span class="text-primary font-semibold">"metodo"</span>: <span class="text-emerald-500 font-medium">"{{ formulario.metodo }}"</span>,
+    <span class="text-primary font-semibold">"cuerpo"</span>: <span style="color: var(--color-accent);">{</span>
+      <span class="text-primary font-semibold">"nombre"</span>: <span class="text-emerald-500 font-medium">"{{ formulario.cuerpo.nombre }}"</span>,
+      <span class="text-primary font-semibold">"email"</span>: <span class="text-emerald-500 font-medium">"{{ formulario.cuerpo.email }}"</span>,
+      <span class="text-primary font-semibold">"mensaje"</span>: <span class="text-emerald-500 font-medium">"{{ formulario.cuerpo.mensaje.replace(/\n/g, '\\n') }}"</span>
+    <span style="color: var(--color-accent);">}</span>
+<span style="color: var(--color-accent);">}</span>
           </pre>
 
           <!-- Terminal de Logs del Sistema -->
-          <div class="rounded-xl border border-slate-800 overflow-hidden" style="background: #0A0D14;">
-            <div class="px-4 py-2 border-b border-slate-800 flex items-center gap-2">
+          <div class="rounded-xl border border-dark-400 overflow-hidden bg-dark-700 shadow-inner">
+            <div class="px-4 py-2 border-b border-dark-400 flex items-center gap-2">
               <span class="text-xs font-mono" style="color: var(--text-muted);">SYSTEM_LOGS</span>
-              <span class="ml-auto w-2 h-2 rounded-full" :style="{ background: estado === 'ENVIADO' ? '#22C55E' : estado === 'ERROR' ? '#EF4444' : '#2563EB' }"></span>
+              <span class="ml-auto w-2 h-2 rounded-full" 
+                    :style="{ background: estado === 'ENVIADO' ? 'bg-emerald-500' : estado === 'ERROR' ? 'bg-red-500' : 'bg-primary' }"></span>
             </div>
-            <div class="p-4 min-h-[80px] flex flex-col justify-end gap-1">
+            <div class="p-4 min-h-[60px] flex flex-col justify-end gap-1">
               <p v-if="logTerminal.length === 0" class="font-mono text-xs animate-pulse" style="color: var(--text-muted);">> Esperando transmisión...</p>
               <p
                 v-for="(log, i) in logTerminal"
                 :key="i"
                 class="font-mono text-xs"
-                :style="{ color: log.tipo === 'error' ? '#F87171' : log.tipo === 'exito' ? '#4ADE80' : 'var(--text-muted)' }"
+                :class="log.tipo === 'error' ? 'text-red-500' : log.tipo === 'exito' ? 'text-emerald-500' : 'text-slate-500 dark:text-slate-400'"
               >
                 {{ log.msg }}
               </p>
@@ -223,17 +225,17 @@ onMounted(() => {
     </div>
 
     <!-- PIE DE PAGINA -->
-    <div class="border-t border-slate-800 py-6 px-6" style="background: #0A0D14;">
+    <div class="border-t border-dark-400 py-6 px-6 bg-dark-800">
       <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
         <p class="text-xs font-mono" style="color: var(--text-muted);">
           &copy; {{ anioActual }} <span style="color: var(--color-primary);">Tapia Tech</span>. Todos los derechos reservados.
         </p>
         <div class="flex items-center gap-4">
-          <a href="https://github.com/ElTapiaGit" target="_blank" class="text-xs font-mono transition-colors" style="color: var(--text-muted);" onmouseover="this.style.color='var(--color-primary)'" onmouseout="this.style.color='var(--text-muted)'">GitHub</a>
-          <span style="color: #2E3650;">·</span>
-          <a href="https://linkedin.com/in/jhon-tapia" target="_blank" class="text-xs font-mono transition-colors" style="color: var(--text-muted);" onmouseover="this.style.color='var(--color-primary)'" onmouseout="this.style.color='var(--text-muted)'">LinkedIn</a>
-          <span style="color: #2E3650;">·</span>
-          <a href="mailto:jhon@tapiatech.dev" class="text-xs font-mono transition-colors" style="color: var(--text-muted);" onmouseover="this.style.color='var(--color-primary)'" onmouseout="this.style.color='var(--text-muted)'">Correo</a>
+          <a href="https://github.com/ElTapiaGit" target="_blank" class="text-xs font-mono transition-colors hover:text-primary" style="color: var(--text-muted);" onmouseover="this.style.color='var(--color-primary)'" onmouseout="this.style.color='var(--text-muted)'">GitHub</a>
+          <span style="color: var(--color-dark-400);">·</span>
+          <a href="https://linkedin.com/in/jhon-e-tapia-vargas-068b6a3ba" target="_blank" class="text-xs font-mono transition-colors hover:text-primary" style="color: var(--text-muted);" onmouseover="this.style.color='var(--color-primary)'" onmouseout="this.style.color='var(--text-muted)'">LinkedIn</a>
+          <span style="color: var(--color-dark-400);">·</span>
+          <a href="mailto:tapiajhon111@gmail.com" class="text-xs font-mono transition-colors hover:text-primary" style="color: var(--text-muted);" onmouseover="this.style.color='var(--color-primary)'" onmouseout="this.style.color='var(--text-muted)'">Correo</a>
         </div>
       </div>
     </div>

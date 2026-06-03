@@ -12,14 +12,15 @@
 import { onMounted, onUnmounted } from 'vue'
 import Lenis from 'lenis'
 
-/* ── Importación de Secciones ──────────────────────────────── */
+/* ── Importación de Secciones ─── */
+import ControlPanel from './components/ControlPanel.vue'
 import SectionHero from './components/SectionHero.vue'
 import SectionAbout from './components/SectionAbout.vue'
 import SectionProjects from './components/SectionProjects.vue'
 import SectionSkills from './components/SectionSkills.vue'
 import TheFooter from './components/TheFooter.vue'
 
-/* ── Estado del Motor de Scroll ────────────────────────────── */
+/* ── Estado del Motor de Scroll ── */
 let lenisInstance = null
 let rafId = null
 
@@ -48,8 +49,7 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-  /* Limpieza de recursos — Cancela el bucle de animación
-     y destruye la instancia de Lenis para liberar memoria. */
+  /* Limpieza de recursos — Cancela el bucle de animacion. */
   if (rafId) {
     cancelAnimationFrame(rafId)
     rafId = null
@@ -65,26 +65,26 @@ onUnmounted(() => {
 <template>
   <!-- Contenedor principal del portafolio -->
   <main class="relative min-h-screen w-full bg-dark">
+    <ControlPanel />
 
-    <!-- Sección 1: Hero — Presentación principal -->
+    <!-- Hero — Presentación principal -->
     <SectionHero />
 
-    <!-- Sección 2: Sobre Mí — Plano de arquitectura de software -->
+    <!-- Sobre Mí — Plano de arquitectura de software -->
     <SectionAbout />
 
-    <!-- Sección 3: Proyectos — Contenedores de infraestructura -->
+    <!-- Proyectos — Contenedores de infraestructura -->
     <SectionProjects />
 
-    <!-- Sección 4: Habilidades — Grafo de dependencias D3 -->
+    <!-- Habilidades — Grafo de dependencias D3 -->
     <SectionSkills />
 
-    <!-- Sección 5: Contacto — Interfaz REST / Pie de página -->
+    <!-- Contacto — Interfaz REST / Pie de página -->
     <TheFooter />
 
   </main>
 </template>
 
 <style scoped>
-/* Estilos a nivel de la aplicación raíz.
-   Los estilos globales se gestionan desde src/style.css. */
+/* Los estilos globales se gestionan desde src/style.css. */
 </style>

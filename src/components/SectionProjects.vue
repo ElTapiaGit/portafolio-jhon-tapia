@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 
-/* ── Estado Reactivo ────────────────────────────────────────── */
+/* ── Estado Reactivo ── */
 const mostrarTodos = ref(false)
 
 const proyectos = [
@@ -9,22 +9,18 @@ const proyectos = [
     titulo: 'Wire Flow VE - Instaladores',
     descripcion: 'App móvil para técnicos de estaciones de carga EV. Gestión de instalaciones, seguimiento de estados y registro de trabajos en campo.',
     estado: 'En prueba cerrada',
-    colorEstadoBg: 'bg-blue-900/40',
-    colorEstadoText: 'text-blue-300',
-    colorEstadoBorder: 'border-blue-800',
+    tipoEstado: 'prueba',
     rol: 'Desarrollador Móvil',
     stack: ['Flutter', 'Dart', 'SQLite'],
     repo: '#',
     arquitectura: 'Clean Architecture / SQLite',
-    imagen: '/asset/images/banner-wireflowve.png'
+    imagen: '/asset/images/banner-wireflowve.webp'
   },
   {
     titulo: 'Finance Local - Finanzas Personales',
     descripcion: 'App offline-first para control financiero personal con privacidad total. Sin servidores externos, datos 100% locales.',
     estado: 'Google Play Store',
-    colorEstadoBg: 'bg-emerald-900/40',
-    colorEstadoText: 'text-emerald-300',
-    colorEstadoBorder: 'border-emerald-800',
+    tipoEstado: 'terminado',
     rol: 'Full Stack Mobile',
     stack: ['Flutter', 'Dart', 'Hive'],
     repo: 'https://github.com/ElTapiaGit/finance-local-app.git',
@@ -35,9 +31,7 @@ const proyectos = [
     titulo: 'App Gestión de Entrenamientos',
     descripcion: 'Plataforma móvil para planificación de rutinas de gimnasio con sincronización en la nube y seguimiento de progreso.',
     estado: 'En desarrollo',
-    colorEstadoBg: 'bg-amber-900/40',
-    colorEstadoText: 'text-amber-300',
-    colorEstadoBorder: 'border-amber-800',
+    tipoEstado: 'desarrollo',
     rol: 'Desarrollador Full Stack',
     stack: ['Flutter', 'Node.js', 'MongoDB'],
     repo: '#',
@@ -48,9 +42,7 @@ const proyectos = [
     titulo: 'Plataforma de Chat para Introvertidos',
     descripcion: 'Chat en tiempo real gamificado con desafíos de interacción social diseñados para personas introvertidas.',
     estado: 'En desarrollo',
-    colorEstadoBg: 'bg-amber-900/40',
-    colorEstadoText: 'text-amber-300',
-    colorEstadoBorder: 'border-amber-800',
+    tipoEstado: 'desarrollo',
     rol: 'Desarrollador Web',
     stack: ['HTML', 'Node.js', 'PostgreSQL', 'WebSockets'],
     repo: 'https://github.com/ElTapiaGit/RetoChat.git',
@@ -60,10 +52,8 @@ const proyectos = [
   {
     titulo: 'Backend Supermercado (POS)',
     descripcion: 'API RESTful para sistema de punto de venta con control de inventario, roles de usuario y autenticación JWT segura.',
-    estado: 'Pruebas Finales',
-    colorEstadoBg: 'bg-blue-900/40',
-    colorEstadoText: 'text-blue-300',
-    colorEstadoBorder: 'border-blue-800',
+    estado: 'En Desarrollo',
+    tipoEstado: 'desarrollo',
     rol: 'Desarrollador Backend',
     stack: ['Node.js', 'Express', 'PostgreSQL'],
     repo: '#',
@@ -74,7 +64,7 @@ const proyectos = [
     titulo: 'Frontend Supermercado (POS)',
     descripcion: 'Interfaz de usuario reactiva para el sistema POS con gestión de ventas, reportes y administración de productos.',
     estado: 'En desarrollo',
-    colorEstadoBg: 'bg-amber-900/40',
+    tipoEstado: 'desarrollo',
     colorEstadoText: 'text-amber-300',
     colorEstadoBorder: 'border-amber-800',
     rol: 'Desarrollador Frontend',
@@ -85,7 +75,7 @@ const proyectos = [
   }
 ]
 
-/* ── Lógica Progresiva ──────────────────────────────────────── */
+/* ── Lógica Progresiva ─── */
 const proyectosVisibles = computed(() => {
   // Muestra 4 proyectos por defecto. Si 'mostrarTodos' es true, muestra el arreglo completo.
   return mostrarTodos.value ? proyectos : proyectos.slice(0, 4)
@@ -93,6 +83,20 @@ const proyectosVisibles = computed(() => {
 
 function toggleProyectos() {
   mostrarTodos.value = !mostrarTodos.value
+}
+
+/* ── Funciones color de estados ─── */
+function obtenerClasesEstado(tipo) {
+  switch (tipo) {
+    case 'terminado':
+      return 'bg-emerald-500/15 text-emerald-600 border-emerald-500/30'
+    case 'prueba':
+      return 'bg-blue-500/15 text-blue-600 border-blue-500/30'
+    case 'desarrollo':
+      return 'bg-amber-500/15 text-amber-600 border-amber-500/30'
+    default:
+      return 'bg-slate-500/15 text-slate-600 border-slate-500/30'
+  }
 }
 </script>
 
@@ -115,7 +119,7 @@ function toggleProyectos() {
         <div
           v-for="(proyecto, idx) in proyectosVisibles"
           :key="idx"
-          class="proyecto-card group relative w-full h-[480px] md:h-[520px] bg-[#0E1118] border border-slate-800 rounded-xl overflow-hidden shadow-xl"
+          class="proyecto-card group relative w-full h-[480px] md:h-[520px] bg-dark-800 border border-dark-400 rounded-xl overflow-hidden shadow-xl"
         >
           <img
             :src="proyecto.imagen"
@@ -124,11 +128,14 @@ function toggleProyectos() {
           />
 
           <div
-            class="absolute inset-0 flex flex-col justify-end p-6 bg-gradient-to-t from-[#0E1118] via-[#0E1118]/90 to-transparent md:translate-y-[calc(100%-180px)] md:group-hover:translate-y-0 transition-transform duration-500 ease-out"
+            class="absolute inset-0 flex flex-col justify-end p-6 md:translate-y-[calc(100%-180px)] md:group-hover:translate-y-0 transition-transform duration-500 ease-out"
+            style="background: linear-gradient(to top, var(--color-dark) 0%, color-mix(in srgb, var(--color-dark) 90%, transparent) 50%, transparent 100%);"
           >
+            <!-- revisar los colores de estado del proyecto dinamico -->
             <div class="flex items-center gap-2 mb-3">
               <span
-                :class="['text-xs font-mono px-2 py-0.5 rounded border', proyecto.colorEstadoBg, proyecto.colorEstadoText, proyecto.colorEstadoBorder]"
+                class="text-xs font-mono px-2 py-0.5 rounded border transition-colors"
+                :class="obtenerClasesEstado(proyecto.tipoEstado)"
               >
                 {{ proyecto.estado }}
               </span>
@@ -142,17 +149,18 @@ function toggleProyectos() {
             </p>
 
             <div class="flex flex-wrap gap-1.5 mb-4">
+              <!--agregar efectos a los stack tecnoligicos del proyectos -->
               <span
                 v-for="tech in proyecto.stack"
                 :key="tech"
-                class="px-2 py-0.5 text-xs font-mono rounded border border-slate-800 bg-black/50"
+                class="px-2 py-0.5 text-xs font-mono rounded border border-dark-400 bg-dark-700/80"
                 style="color: var(--text-base);"
               >
                 {{ tech }}
               </span>
             </div>
 
-            <div class="flex flex-col gap-2 border-t border-slate-800/80 pt-3">
+            <div class="flex flex-col gap-2 border-t border-dark-400/80 pt-3">
               <div class="grid grid-cols-2 gap-2">
                 <div>
                   <div class="text-xs font-mono tracking-widest mb-0.5" style="color: var(--text-muted);">ARQUITECTURA</div>
@@ -166,7 +174,7 @@ function toggleProyectos() {
               <a
                 :href="proyecto.repo"
                 target="_blank"
-                class="relative z-40 inline-flex items-center gap-1.5 text-xs font-mono px-3 py-1.5 rounded border border-slate-700 hover:border-blue-600 hover:text-blue-400 transition-colors w-fit mt-1"
+                class="relative z-40 inline-flex items-center gap-1.5 text-xs font-mono px-3 py-1.5 rounded border border-dark-400 hover:border-primary hover:text-primary transition-colors w-fit mt-1"
                 style="color: var(--text-base);"
               >
                 Ver Repositorio
@@ -183,7 +191,7 @@ function toggleProyectos() {
       <div v-if="proyectos.length > 4" class="mt-14 w-full flex justify-center">
         <button 
           @click="toggleProyectos"
-          class="btn-secondary transition-all"
+          class="btn-secondary transition-all duration-300"
         >
           {{ mostrarTodos ? 'Ocultar proyectos' : 'Cargar más proyectos' }}
           <svg 

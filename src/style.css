@@ -11,33 +11,76 @@
 
 @layer base {
   :root {
-    --color-dark:           #0E1118;
-    --color-dark-800:       #111520;
-    --color-dark-700:       #161B2A;
-    --color-dark-600:       #1C2236;
-    --color-dark-500:       #232A40;
-    --color-dark-400:       #2E3650;
-    --color-dark-300:       #3D4663;
-    --color-primary:        #2563EB;
-    --color-primary-dim:    rgba(37, 99, 235, 0.12);
-    --color-primary-hover:  #1D4ED8;
-    --color-accent:         #64748B;
-    --color-accent-dim:     rgba(100, 116, 139, 0.15);
-    --text-bright:          #F8FAFC;
-    --text-base:            #94A3B8;
-    --text-muted:           #475569;
-    --font-sans:            'Inter', system-ui, sans-serif;
-    --font-mono:            'JetBrains Mono', ui-monospace, Consolas, monospace;
-    --font-heading:         'Inter', system-ui, sans-serif;
-    --glass-bg:             rgba(14, 17, 24, 0.75);
-    --glass-border:         rgba(255, 255, 255, 0.06);
-    --glass-blur:           16px;
-    --transition-fast:      150ms cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-base:      300ms cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-smooth:    500ms cubic-bezier(0.22, 1, 0.36, 1);
+    /* MODO OSCURO (Default) */
+    --color-dark: #0E1118;
+    --color-dark-800: #111520;
+    --color-dark-700: #161B2A;
+    --color-dark-600: #1C2236;
+    --color-dark-500: #232A40;
+    --color-dark-400: #2E3650;
+    --color-dark-300: #3D4663;
+    /* Colores de marca */
+    --color-primary: #2563EB;
+    --color-primary-dim: rgba(37, 99, 235, 0.12);
+    --color-primary-hover: #1D4ED8;
+    --color-accent: #64748B;
+    --color-accent-dim: rgba(100, 116, 139, 0.15);
+
+    --text-bright: #F8FAFC;
+    --text-base: #94A3B8;
+    --text-muted: #475569;
+
+    --font-sans: 'Inter', system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, Consolas, monospace;
+    --font-heading: 'Inter', system-ui, sans-serif;
+
+    --glass-bg: rgba(14, 17, 24, 0.75);
+    --glass-border: rgba(255, 255, 255, 0.06);
+    --nav-bg: rgba(14, 17, 24, 0.13);
+    --nav-border: rgba(255, 255, 255, 0.05);
+    --grid-color: rgba(255, 255, 255, 0.015);
+
+    --glass-blur: 16px;
+    --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-base: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-smooth: 500ms cubic-bezier(0.22, 1, 0.36, 1);
   }
 
-  *, *::before, *::after {
+  /* MODO CLARO */
+  :root.light {
+    /* usamos semanticamente para los fondos */
+    --color-dark: #F8FAFC;
+    /* Base de la pagina (Blanco/Gris muy claro) */
+    --color-dark-800: #FFFFFF;
+    /* Superficies de tarjetas (Blanco puro) */
+    --color-dark-700: #F1F5F9;
+    /* Paneles secundarios */
+    --color-dark-600: #E2E8F0;
+    /* Bordes suaves */
+    --color-dark-500: #CBD5E1;
+    /* Bordes medios */
+    --color-dark-400: #94A3B8;
+    /* Bordes fuertes */
+    --color-dark-300: #64748B;
+
+    --text-bright: #0F172A;
+    /* Textos principales (Casi negro) */
+    --text-base: #334155;
+    /* Textos secundarios */
+    --text-muted: #64748B;
+    /* Textos terciarios */
+
+    --glass-bg: rgba(255, 255, 255, 0.75);
+    --glass-border: rgba(0, 0, 0, 0.06);
+    --nav-bg: rgba(255, 255, 255, 0.85);
+    --nav-border: rgba(0, 0, 0, 0.05);
+    --grid-color: rgba(0, 0, 0, 0.03);
+    /* Cuadricula mas oscura para que se vea en fondo blanco */
+  }
+
+  *,
+  *::before,
+  *::after {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
@@ -49,6 +92,7 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+    transition: background-color var(--transition-base), color var(--transition-base);
   }
 
   body {
@@ -58,6 +102,7 @@
     min-height: 100vh;
     overflow-x: hidden;
     line-height: 1.6;
+    transition: background-color var(--transition-base), color var(--transition-base);
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -65,6 +110,7 @@
     font-weight: 600;
     color: var(--text-bright);
     line-height: 1.15;
+    transition: color var(--transition-base);
   }
 
   a {
@@ -72,40 +118,94 @@
     text-decoration: none;
     transition: color var(--transition-fast);
   }
-  a:hover { color: var(--color-primary-hover); }
 
-  code, pre { font-family: var(--font-mono); font-size: 0.875em; }
+  a:hover {
+    color: var(--color-primary-hover);
+  }
+
+  code,
+  pre {
+    font-family: var(--font-mono);
+    font-size: 0.875em;
+  }
+
   code {
     border-radius: 4px;
     padding: 2px 6px;
     background: var(--color-dark-700);
     color: var(--color-primary);
+    transition: background-color var(--transition-base);
   }
+
   pre {
     border-radius: 8px;
     padding: 16px;
     overflow-x: auto;
     background: var(--color-dark-800);
+    transition: background-color var(--transition-base);
   }
 
-  ::selection { background: rgba(37, 99, 235, 0.25); color: #fff; }
+  ::selection {
+    background: rgba(37, 99, 235, 0.25);
+    color: inherit;
+  }
 
-  ::-webkit-scrollbar { width: 5px; height: 5px; }
-  ::-webkit-scrollbar-track { background: var(--color-dark-800); }
-  ::-webkit-scrollbar-thumb { background: var(--color-dark-400); border-radius: 3px; }
-  ::-webkit-scrollbar-thumb:hover { background: var(--color-primary); }
+  ::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
 
-  canvas { display: block; }
-  img, svg { max-width: 100%; display: block; }
+  ::-webkit-scrollbar-track {
+    background: var(--color-dark-800);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-dark-400);
+    border-radius: 3px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-primary);
+  }
+
+  canvas {
+    display: block;
+  }
+
+  img,
+  svg {
+    max-width: 100%;
+    display: block;
+  }
 }
 
 @layer components {
+
+  /* efecto glass y transiciones */
+  .nav-backdrop {
+    backdrop-filter: blur(var(--glass-blur));
+    background: var(--nav-bg);
+    border-right: 1px solid var(--nav-border);
+    transition: background-color var(--transition-base), border-color var(--transition-base);
+  }
+
+  /* animacion para el trigger (la cinta) */
+  .nav-trigger {
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .nav-trigger:hover {
+    width: 48px;
+    background: rgba(37, 99, 235, 0.2);
+  }
+
   .glass-panel {
     background: var(--glass-bg);
     backdrop-filter: blur(var(--glass-blur));
     -webkit-backdrop-filter: blur(var(--glass-blur));
     border: 1px solid var(--glass-border);
     border-radius: 12px;
+    transition: background-color var(--transition-base), border-color var(--transition-base);
   }
 
   .status-badge {
@@ -122,6 +222,7 @@
     color: var(--color-primary);
     border: 1px solid rgba(37, 99, 235, 0.25);
   }
+
   .status-badge::before {
     content: '';
     width: 6px;
@@ -145,8 +246,11 @@
     padding: 80px 24px;
     max-width: 1280px;
   }
+
   @media (min-width: 1024px) {
-    .section-container { padding: 112px 48px; }
+    .section-container {
+      padding: 112px 48px;
+    }
   }
 
   .svg-connection {
@@ -172,7 +276,11 @@
     transition: background var(--transition-fast);
     text-decoration: none;
   }
-  .btn-primary:hover { background: var(--color-primary-hover); color: #fff; }
+
+  .btn-primary:hover {
+    background: var(--color-primary-hover);
+    color: #fff;
+  }
 
   .btn-secondary {
     display: inline-flex;
@@ -190,7 +298,11 @@
     transition: border-color var(--transition-fast), color var(--transition-fast);
     text-decoration: none;
   }
-  .btn-secondary:hover { border-color: var(--color-primary); color: var(--text-bright); }
+
+  .btn-secondary:hover {
+    border-color: var(--color-primary);
+    color: var(--text-bright);
+  }
 }
 
 @layer utilities {
@@ -210,5 +322,21 @@
   .fade-edges {
     mask-image: linear-gradient(90deg, transparent 0%, black 5%, black 95%, transparent 100%);
     -webkit-mask-image: linear-gradient(90deg, transparent 0%, black 5%, black 95%, transparent 100%);
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateX(-15px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
   }
 }
