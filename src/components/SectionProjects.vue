@@ -6,15 +6,26 @@ const mostrarTodos = ref(false)
 
 const proyectos = [
   {
-    titulo: 'Wire Flow VE - Instaladores',
-    descripcion: 'App móvil para técnicos de estaciones de carga EV. Gestión de instalaciones, seguimiento de estados y registro de trabajos en campo.',
-    estado: 'En prueba cerrada',
-    tipoEstado: 'prueba',
-    rol: 'Desarrollador Móvil',
-    stack: ['Flutter', 'Dart', 'SQLite'],
+    titulo: 'Sistema Inventario Institucional - ULAT',
+    descripcion: 'Plataforma web certificada para la gestión integral de activos, infraestructura multisede, bitácoras de mantenimiento y control estricto de roles.',
+    estado: 'Implementado y Certificado',
+    tipoEstado: 'terminado',
+    rol: 'Desarrollador Full Stack',
+    stack: ['Laravel', 'MySQL', 'Bootstrap', 'Blade'],
     repo: '#',
-    arquitectura: 'Clean Architecture / SQLite',
-    imagen: '/asset/images/banner-wireflowve.webp'
+    arquitectura: 'MVC / RBAC Security',
+    imagen: '/asset/images/banner-ulat.webp' 
+  },
+  {
+    titulo: 'CosechApp - Control Agrónomo',
+    descripcion: 'Plataforma multiplataforma offline-first para gestión de cosechas. Implementa sincronización híbrida (Supabase/Hive), reportes estadísticos dinámicos y generación de Excel en dispositivo.',
+    estado: 'Finalizado',
+    tipoEstado: 'terminado',
+    rol: 'Arquitecto y Desarrollador Flutter',
+    stack: ['Flutter', 'Supabase', 'Hive', 'GoRouter'],
+    repo: '#', 
+    arquitectura: 'MVVM / Clean Architecture',
+    imagen: '/asset/images/banner-cosechapp.webp'
   },
   {
     titulo: 'Finance Local - Finanzas Personales',
@@ -28,15 +39,15 @@ const proyectos = [
     imagen: '/asset/images/proyect-finance.webp'
   },
   {
-    titulo: 'App Gestión de Entrenamientos',
-    descripcion: 'Plataforma móvil para planificación de rutinas de gimnasio con sincronización en la nube y seguimiento de progreso.',
-    estado: 'En desarrollo',
-    tipoEstado: 'desarrollo',
-    rol: 'Desarrollador Full Stack',
-    stack: ['Flutter', 'Node.js', 'MongoDB'],
+    titulo: 'Wire Flow VE - Instaladores',
+    descripcion: 'App móvil para técnicos de estaciones de carga EV. Gestión de instalaciones, seguimiento de estados y registro de trabajos en campo.',
+    estado: 'En prueba cerrada',
+    tipoEstado: 'prueba',
+    rol: 'Desarrollador Móvil',
+    stack: ['Flutter', 'Dart', 'SQLite'],
     repo: '#',
-    arquitectura: 'Node.js & MongoDB Architecture',
-    imagen: '/asset/images/proyect-gym.webp'
+    arquitectura: 'Clean Architecture / SQLite',
+    imagen: '/asset/images/banner-wireflowve.webp'
   },
   {
     titulo: 'Plataforma de Chat para Introvertidos',
@@ -48,30 +59,6 @@ const proyectos = [
     repo: 'https://github.com/ElTapiaGit/RetoChat.git',
     arquitectura: 'Event-Driven / WebSockets',
     imagen: '/asset/images/proyect-chat.webp'
-  },
-  {
-    titulo: 'Backend Supermercado (POS)',
-    descripcion: 'API RESTful para sistema de punto de venta con control de inventario, roles de usuario y autenticación JWT segura.',
-    estado: 'En Desarrollo',
-    tipoEstado: 'desarrollo',
-    rol: 'Desarrollador Backend',
-    stack: ['Node.js', 'Express', 'PostgreSQL'],
-    repo: '#',
-    arquitectura: 'REST API / JWT Auth',
-    imagen: '/asset/images/proyect-api.webp'
-  },
-  {
-    titulo: 'Frontend Supermercado (POS)',
-    descripcion: 'Interfaz de usuario reactiva para el sistema POS con gestión de ventas, reportes y administración de productos.',
-    estado: 'En desarrollo',
-    tipoEstado: 'desarrollo',
-    colorEstadoText: 'text-amber-300',
-    colorEstadoBorder: 'border-amber-800',
-    rol: 'Desarrollador Frontend',
-    stack: ['Vue.js', 'TailwindCSS', 'Pinia'],
-    repo: '#',
-    arquitectura: 'Component-Based / Pinia',
-    imagen: '/asset/images/proyect-frontend.webp'
   }
 ]
 

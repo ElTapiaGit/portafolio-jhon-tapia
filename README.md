@@ -24,7 +24,7 @@ Construido con un enfoque estricto en la arquitectura limpia, rendimiento (optim
 ## 👨‍💻 Autor
 
 **Jhon Eligio Tapia Vargas**
-* LinkedIn: [jhon-tapia](www.linkedin.com/in/jhon-e-tapia-vargas-068b6a3ba)
+* LinkedIn: [jhon-tapia](https://www.linkedin.com/in/jhon-e-tapia-vargas-068b6a3ba)
 * GitHub: [@ElTapiaGit](https://github.com/ElTapiaGit)
 
 ---
