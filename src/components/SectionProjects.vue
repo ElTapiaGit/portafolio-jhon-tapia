@@ -12,7 +12,7 @@ const proyectos = [
     tipoEstado: 'terminado',
     rol: 'Desarrollador Full Stack',
     stack: ['Laravel', 'MySQL', 'Bootstrap', 'Blade'],
-    repo: '#',
+    repo: 'https://github.com/ElTapiaGit/inventorySedes.git',
     arquitectura: 'MVC / RBAC Security',
     imagen: '/asset/images/banner-ulat.webp' 
   },
@@ -23,7 +23,7 @@ const proyectos = [
     tipoEstado: 'terminado',
     rol: 'Arquitecto y Desarrollador Flutter',
     stack: ['Flutter', 'Supabase', 'Hive', 'GoRouter'],
-    repo: '#', 
+    repo: 'https://github.com/ElTapiaGit/cosechapp-web-mobile.git', 
     arquitectura: 'MVVM / Clean Architecture',
     imagen: '/asset/images/banner-cosechapp.webp'
   },
@@ -39,13 +39,24 @@ const proyectos = [
     imagen: '/asset/images/proyect-finance.webp'
   },
   {
+    titulo: 'Enterprise RAG Core - Local AI',
+    descripcion: 'Motor de Inteligencia Artificial privado (RAG) para ingesta, indexación vectorial y búsqueda semántica de documentos confidenciales. Funciona 100% local bajo Docker, garantizando costo cero y privacidad absoluta.',
+    estado: 'Finalizado',
+    tipoEstado: 'terminado',
+    rol: 'Backend & AI Integration Engineer',
+    stack: ['Node.js', 'Express', 'PostgreSQL', 'Docker', 'Ollama'],
+    repo: 'https://github.com/ElTapiaGit/RAG-Empresarial-Local.git', 
+    arquitectura: 'Vector Search / RAG Pipeline',
+    imagen: '/asset/images/software_infrastructure.webp'
+  },
+  {
     titulo: 'Wire Flow VE - Instaladores',
     descripcion: 'App móvil para técnicos de estaciones de carga EV. Gestión de instalaciones, seguimiento de estados y registro de trabajos en campo.',
     estado: 'En prueba cerrada',
     tipoEstado: 'prueba',
     rol: 'Desarrollador Móvil',
     stack: ['Flutter', 'Dart', 'SQLite'],
-    repo: '#',
+    repo: 'https://github.com/ElTapiaGit/Wire-Flow-VE-electrolineras.git',
     arquitectura: 'Clean Architecture / SQLite',
     imagen: '/asset/images/banner-wireflowve.webp'
   },

@@ -86,7 +86,7 @@ const toggleTheme = () => {
         class="w-12 h-12 md:w-14 md:h-14 object-contain self-start transition-transform hover:scale-105 logo-shadow"
       >
       <div class="text-xs font-mono tracking-widest uppercase mt-2" style="color: var(--text-muted);">
-        SYS_NAV <br> <span style="color: var(--color-primary);">// TAPIA_TECH</span>
+        <span style="color: var(--color-primary);"> TAPIA_TECH</span>
       </div>
     </div>
   
