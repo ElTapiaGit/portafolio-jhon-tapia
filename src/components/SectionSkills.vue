@@ -1,23 +1,77 @@
 <script setup>
-import { ref, onMounted, onUnmounted, nextTick } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import * as d3 from 'd3'
 
 const canvasRef = ref(null)
-const isMobile = ref(false)
 const filtroActivo = ref(0)
 
 const nodosData = [
-  { id: 'Vue',        group: 1, label: 'Vue 3',       icono: '/asset/icons/vue.svg' },
-  { id: 'Node',       group: 2, label: 'Node.js',     icono: '/asset/icons/node.svg' },
-  { id: 'PHP',        group: 2, label: 'PHP',         icono: '/asset/icons/php.svg' },
-  { id: 'Laravel',    group: 2, label: 'Laravel',     icono: '/asset/icons/laravel.svg' },
-  { id: 'MySQL',      group: 2, label: 'MySQL',       icono: '/asset/icons/mysql.svg' },
-  { id: 'PostgreSQL', group: 2, label: 'PostgreSQL',  icono: '/asset/icons/postgresql.svg' },
-  { id: 'MongoDB',    group: 2, label: 'MongoDB',     icono: '/asset/icons/mongodb.svg' },
-  { id: 'Flutter',    group: 3, label: 'Flutter',     icono: '/asset/icons/flutter.svg' },
-  { id: 'Git',        group: 3, label: 'Git',         icono: '/asset/icons/git.svg' },
-  { id: 'Postman',    group: 3, label: 'Postman',     icono: '/asset/icons/postman.svg' },
-  { id: 'Figma',      group: 1, label: 'Figma',       icono: '/asset/icons/figma.svg' },
+  { 
+    id: 'Vue', group: 1, label: 'Vue 3', icono: '/asset/icons/vue.svg',
+    tipo: 'Frontend Core',
+    descripcion: 'Desarrollo de interfaces reactivas con Composition API, Pinia y Single Page Applications.',
+    proyectos: ['Portafolio Tapia Tech', 'Reservas Kordya']
+  },
+  { 
+    id: 'Flutter', group: 3, label: 'Flutter', icono: '/asset/icons/flutter.svg',
+    tipo: 'Mobile Architecture',
+    descripcion: 'Clean Architecture, manejo de estado con Provider, persistencia offline-first con Hive y SQLite.',
+    proyectos: ['CosechApp', 'Finance Local', 'Wire Flow VE']
+  },
+  { 
+    id: 'Node', group: 2, label: 'Node.js', icono: '/asset/icons/node.svg',
+    tipo: 'Backend & APIs',
+    descripcion: 'Servicios RESTful, WebSockets asíncronos y orquestación de pipelines RAG locales.',
+    proyectos: ['Enterprise RAG Core', 'RetoChat']
+  },
+  { 
+    id: 'Laravel', group: 2, label: 'Laravel', icono: '/asset/icons/laravel.svg',
+    tipo: 'Backend Enterprise',
+    descripcion: 'Patrón MVC modular, middleware de autorización RBAC y generación de reportes transaccionales.',
+    proyectos: ['Sistema Inventario ULAT']
+  },
+  { 
+    id: 'PostgreSQL', group: 2, label: 'PostgreSQL', icono: '/asset/icons/postgresql.svg',
+    tipo: 'Database & Vector Search',
+    descripcion: 'Almacenamiento relacional normalizado y búsqueda semántica de alta velocidad con pgvector.',
+    proyectos: ['Enterprise RAG Core', 'RetoChat']
+  },
+  { 
+    id: 'MySQL', group: 2, label: 'MySQL', icono: '/asset/icons/mysql.svg',
+    tipo: 'Relational Database',
+    descripcion: 'Modelado relacional con llaves foráneas e índices compuestos para auditoría de activos.',
+    proyectos: ['Sistema Inventario ULAT']
+  },
+  { 
+    id: 'MongoDB', group: 2, label: 'MongoDB', icono: '/asset/icons/mongodb.svg',
+    tipo: 'NoSQL Document Store',
+    descripcion: 'Almacenamiento de documentos JSON flexible para esquemas no relacionales y telemetría.',
+    proyectos: ['Supermarket Backend API']
+  },
+  { 
+    id: 'PHP', group: 2, label: 'PHP', icono: '/asset/icons/php.svg',
+    tipo: 'Backend Language',
+    descripcion: 'Desarrollo backend robusto con tipado estricto y controladores orientados a objetos.',
+    proyectos: ['Sistema Inventario ULAT']
+  },
+  { 
+    id: 'Git', group: 3, label: 'Git & GitHub', icono: '/asset/icons/git.svg',
+    tipo: 'Version Control & CI/CD',
+    descripcion: 'Flujos GitFlow, control de versiones atómico y despliegue de releases en tiendas y web.',
+    proyectos: ['Todos los repositorios']
+  },
+  { 
+    id: 'Postman', group: 3, label: 'Postman', icono: '/asset/icons/postman.svg',
+    tipo: 'API Testing & Contracts',
+    descripcion: 'Documentación de colecciones de endpoints, pruebas de carga y validación de contratos JSON.',
+    proyectos: ['APIs RESTful de backend']
+  },
+  { 
+    id: 'Figma', group: 1, label: 'Figma', icono: '/asset/icons/figma.svg',
+    tipo: 'UI/UX Prototyping',
+    descripcion: 'Diseño de wireframes de alta fidelidad, design systems y preparación de assets SVG.',
+    proyectos: ['Diseño de UI Portafolio', 'Finance Local']
+  }
 ]
 
 const linksData = [
@@ -29,29 +83,22 @@ const linksData = [
   { source: 'Laravel', target: 'Vue' },
   { source: 'Flutter', target: 'Node' },
   { source: 'Git',     target: 'Node' },
-  { source: 'Postman', target: 'Node' },
   { source: 'Figma',   target: 'Vue' },
 ]
 
-const habilidadesBlandas = [
-  { etiqueta: 'Resolución de Problemas' },
-  { etiqueta: 'Pensamiento Analítico' },
-  { etiqueta: 'Adaptabilidad' },
-  { etiqueta: 'Autodidacta' },
-  { etiqueta: 'Trabajo en Equipo' },
-  { etiqueta: 'Gestión del Tiempo' },
-  { etiqueta: 'Atención al Detalle' },
-  { etiqueta: 'Liderazgo Técnico' },
-  { etiqueta: 'Comunicación Efectiva' },
-  { etiqueta: 'Innovación Continua' },
+const filtros = [
+  { id: 0, etiqueta: 'Todos' },
+  { id: 1, etiqueta: 'Frontend' },
+  { id: 2, etiqueta: 'Backend & DB' },
+  { id: 3, etiqueta: 'Mobile & Tools' },
 ]
 
-const filtros = [
-  { id: 0, etiqueta: '[ 00. TODO ]' },
-  { id: 1, etiqueta: '[ 01. FRONTEND ]' },
-  { id: 2, etiqueta: '[ 02. BACKEND & DB ]' },
-  { id: 3, etiqueta: '[ 03. MOBILE & TOOLS ]' },
-]
+const nodoSeleccionado = ref(nodosData.find(n => n.id === 'Flutter') || nodosData[0])
+
+const nodosFiltrados = computed(() => {
+  if (filtroActivo.value === 0) return nodosData
+  return nodosData.filter(n => n.group === filtroActivo.value)
+})
 
 let simulation = null
 let width = 0
@@ -60,8 +107,9 @@ let nodes = []
 let links = []
 let ctx = null
 const imageCache = {}
-let resizeObserver = null // escuchar cambios de tamaño
-let intersectionObserver = null // observador de visibilidad para liberar CPU
+let resizeObserver = null
+let intersectionObserver = null
+let themeObserver = null
 
 function precargarIconos() {
   nodosData.forEach(d => {
@@ -73,12 +121,15 @@ function precargarIconos() {
 
 function initCanvas() {
   if (!canvasRef.value) return
-  // guardamos las dimensionamientos logicos y fisicas en variables para evitar lecturas repetidas
   const container = canvasRef.value.parentElement
   if (!container) return 
+  if (typeof window !== 'undefined' && window.innerWidth < 768) {
+    if (simulation) simulation.stop()
+    return
+  }
 
   width = container.clientWidth
-  height = container.clientHeight || 480 // tamano minimo contenedor para evitar colapsos
+  height = 440
   canvasRef.value.width = width
   canvasRef.value.height = height
   ctx = canvasRef.value.getContext('2d')
@@ -86,15 +137,14 @@ function initCanvas() {
   nodes = nodosData.map(d => Object.create(d))
   links = linksData.map(d => Object.create(d))
 
-  // pa no tener multiples simulaciones cooriendo en caso de remount
   if (simulation) simulation.stop()
 
   simulation = d3.forceSimulation(nodes)
-    .force('charge', d3.forceManyBody().strength(-120))  //repulsion entre nodos para que no se amontonen
-    .force('link', d3.forceLink(links).id(d => d.id).distance(100))
-    .force('collide', d3.forceCollide().radius(45).iterations(2))
+    .force('charge', d3.forceManyBody().strength(-190))
+    .force('link', d3.forceLink(links).id(d => d.id).distance(110))
+    .force('collide', d3.forceCollide().radius(46).iterations(2))
     .force('center', d3.forceCenter(width / 2, height / 2))
-    .alphaTarget(0.02)  // efecto flotabilidad inicial
+    .alphaTarget(0.02)
     .on('tick', dibujar)
 
   d3.select(canvasRef.value)
@@ -107,47 +157,82 @@ function initCanvas() {
 }
 
 function dibujar() {
-  if (!ctx || isMobile.value) return
+  if (!ctx) return
   ctx.clearRect(0, 0, width, height)
 
-  // dibujar conexiones (links)
+  const isLight = typeof document !== 'undefined' && document.documentElement.classList.contains('light')
+
   links.forEach(d => {
     const activo = filtroActivo.value === 0 || d.source.group === filtroActivo.value || d.target.group === filtroActivo.value
+    const conectado = nodoSeleccionado.value && (d.source.id === nodoSeleccionado.value.id || d.target.id === nodoSeleccionado.value.id)
+
     ctx.beginPath()
     ctx.moveTo(d.source.x, d.source.y)
     ctx.lineTo(d.target.x, d.target.y)
-    ctx.strokeStyle = activo ? 'rgba(37,99,235,0.3)' : 'rgba(100,116,139,0.05)' // ajustado el contraste
-    ctx.lineWidth = activo ? 1.5 : 1
+    
+    if (conectado) {
+      ctx.strokeStyle = isLight ? 'rgba(37, 99, 235, 0.85)' : 'rgba(59, 130, 246, 0.7)'
+      ctx.lineWidth = 2
+    } else {
+      ctx.strokeStyle = activo 
+        ? (isLight ? 'rgba(37, 99, 235, 0.25)' : 'rgba(37, 99, 235, 0.25)') 
+        : (isLight ? 'rgba(148, 163, 184, 0.2)' : 'rgba(100, 116, 139, 0.08)')
+      ctx.lineWidth = activo ? 1.5 : 1
+    }
     ctx.stroke()
   })
 
-  // dibujar nodos (circulos + iconos + etiquetas)
   nodes.forEach(d => {
     const activo = filtroActivo.value === 0 || d.group === filtroActivo.value
+    const seleccionado = nodoSeleccionado.value && nodoSeleccionado.value.id === d.id
     const radio = 36
-    const opacidad = activo ? 1 : 0.15
+    const opacidad = activo ? 1 : (isLight ? 0.3 : 0.15)
 
     ctx.save()
     ctx.globalAlpha = opacidad
-    //circulo base del nodo
+
+    if (seleccionado) {
+      ctx.beginPath()
+      ctx.arc(d.x, d.y, radio + 6, 0, 2 * Math.PI)
+      ctx.strokeStyle = '#2563EB'
+      ctx.lineWidth = 2.5
+      ctx.stroke()
+
+      ctx.beginPath()
+      ctx.arc(d.x, d.y, radio + 10, 0, 2 * Math.PI)
+      ctx.strokeStyle = isLight ? 'rgba(37, 99, 235, 0.2)' : 'rgba(37, 99, 235, 0.35)'
+      ctx.lineWidth = 1.5
+      ctx.stroke()
+    }
+
     ctx.beginPath()
     ctx.arc(d.x, d.y, radio, 0, 2 * Math.PI)
-    ctx.fillStyle = 'rgba(22, 27, 42, 0.95)'
-    ctx.fill()
-    ctx.strokeStyle = activo ? 'rgba(37,99,235,0.5)' : 'rgba(100,116,139,0.2)'
-    ctx.lineWidth = 1
+    if (isLight) {
+      ctx.fillStyle = seleccionado ? '#EFF6FF' : '#FFFFFF'
+      ctx.fill()
+      ctx.strokeStyle = seleccionado ? '#2563EB' : (activo ? '#CBD5E1' : '#E2E8F0')
+    } else {
+      ctx.fillStyle = seleccionado ? 'rgba(30, 41, 68, 0.98)' : 'rgba(22, 27, 42, 0.95)'
+      ctx.fill()
+      ctx.strokeStyle = seleccionado ? '#3B82F6' : (activo ? 'rgba(37, 99, 235, 0.5)' : 'rgba(100, 116, 139, 0.2)')
+    }
+    ctx.lineWidth = seleccionado ? 2 : 1
     ctx.stroke()
-    // icono del nodo SVG
+
     const img = imageCache[d.id]
-    const iconSize = 28  // tamaño del icono dentro del nodo
+    const iconSize = 28
 
     if (img) {
       ctx.drawImage(img, d.x - iconSize / 2, d.y - iconSize / 2 - 6, iconSize, iconSize)
     }
 
-    // texto etiqueta del nodo
-    ctx.fillStyle = activo ? '#94A3B8' : '#3D4663'  // Blanco Titanio / Gris Acero
-    ctx.font = '11px JetBrains Mono, monospace'
+    if (isLight) {
+      ctx.fillStyle = seleccionado ? '#1D4ED8' : (activo ? '#334155' : '#94A3B8')
+      ctx.font = seleccionado ? '600 11px JetBrains Mono, monospace' : '11px JetBrains Mono, monospace'
+    } else {
+      ctx.fillStyle = seleccionado ? '#FFFFFF' : (activo ? '#94A3B8' : '#3D4663')
+      ctx.font = seleccionado ? 'bold 11px JetBrains Mono, monospace' : '11px JetBrains Mono, monospace'
+    }
     ctx.textAlign = 'center'
     ctx.textBaseline = 'middle'
     ctx.fillText(d.label, d.x, d.y + 18)
@@ -176,6 +261,11 @@ function iniciarDrag(event) {
   if (!event.active) simulation.alphaTarget(0.3).restart()
   event.subject.fx = event.subject.x
   event.subject.fy = event.subject.y
+
+  const original = nodosData.find(n => n.id === event.subject.id)
+  if (original) {
+    nodoSeleccionado.value = original
+  }
 }
 
 function arrastrar(event) {
@@ -189,177 +279,282 @@ function soltarDrag(event) {
   event.subject.fy = null
 }
 
+function handleMouseMove(event) {
+  if (!canvasRef.value || (typeof window !== 'undefined' && window.innerWidth < 768)) return
+  const rect = canvasRef.value.getBoundingClientRect()
+  const x = event.clientX - rect.left
+  const y = event.clientY - rect.top
+  
+  const radio = 38
+  let hoveredNode = null
+  for (const nodo of nodes) {
+    const dx = x - nodo.x
+    const dy = y - nodo.y
+    if (dx * dx + dy * dy <= radio * radio) {
+      hoveredNode = nodo
+      break
+    }
+  }
+  canvasRef.value.style.cursor = hoveredNode ? 'pointer' : 'grab'
+  if (hoveredNode) {
+    const original = nodosData.find(n => n.id === hoveredNode.id)
+    if (original && nodoSeleccionado.value?.id !== original.id) {
+      nodoSeleccionado.value = original
+    }
+  }
+}
+
+function handleCanvasClick(event) {
+  if (!canvasRef.value || (typeof window !== 'undefined' && window.innerWidth < 768)) return
+  const rect = canvasRef.value.getBoundingClientRect()
+  const x = event.clientX - rect.left
+  const y = event.clientY - rect.top
+  
+  const radio = 40
+  for (const nodo of nodes) {
+    const dx = x - nodo.x
+    const dy = y - nodo.y
+    if (dx * dx + dy * dy <= radio * radio) {
+      const original = nodosData.find(n => n.id === nodo.id)
+      if (original) {
+        nodoSeleccionado.value = original
+      }
+      return
+    }
+  }
+}
+
 function aplicarFiltro(grupo) {
   filtroActivo.value = grupo
-  if (isMobile.value || !simulation) return
 
-  // fisica de filtrado suavemente
-  simulation.force('center', null) // quitamos el centro estricto
+  if (nodoSeleccionado.value && grupo !== 0 && nodoSeleccionado.value.group !== grupo) {
+    const primero = nodosData.find(n => n.group === grupo)
+    if (primero) nodoSeleccionado.value = primero
+  }
+
+  if (!simulation || (typeof window !== 'undefined' && window.innerWidth < 768)) return
+
+  simulation.force('center', null)
 
   if (grupo === 0) {
-    // Si seleccionan TODO, volvemos a centrar todos los nodos
     simulation.force('x', d3.forceX(width / 2).strength(0.05))
     simulation.force('y', d3.forceY(height / 2).strength(0.05))
   } else {
-    // Si seleccionan un grupo, agrupamos los activos al centro y empujamos suavemente el resto a la periferia
     simulation.force('x', d3.forceX()
-      .strength(d => d.group === grupo ? 0.1 : 0.02)
-      .x(d => d.group === grupo ? width / 2 : (d.x < width / 2 ? 80 : width - 80))
+      .strength(d => d.group === grupo ? 0.12 : 0.03)
+      .x(d => d.group === grupo ? width / 2 : (d.x < width / 2 ? 70 : width - 70))
     )
     simulation.force('y', d3.forceY()
-      .strength(d => d.group === grupo ? 0.1 : 0.02)
-      .y(d => d.group === grupo ? height / 2 : (d.y < height / 2 ? 80 : height - 80))
+      .strength(d => d.group === grupo ? 0.12 : 0.03)
+      .y(d => d.group === grupo ? height / 2 : (d.y < height / 2 ? 70 : height - 70))
     )
   }
   
-  // Le damos un "empujón" de energía para que se reacomoden fluidamente
   simulation.alpha(0.6).restart()
 }
 
-const mobileQuery = typeof window !== 'undefined'
-  ? window.matchMedia('(max-width: 767px)')
-  : null
-
-function handleMediaChange(e) { 
-  isMobile.value = e.matches 
-  if (!e.matches) {
-     nextTick(() => { initCanvas() }) // Si cambia de móvil a escritorio, iniciamos canvas
-  } else {
-    if (simulation) simulation.stop() // Si cambia de escritorio a móvil, ahorramos CPU
-  }
-}
-
 onMounted(() => {
-  if (mobileQuery) {
-    isMobile.value = mobileQuery.matches
-    mobileQuery.addEventListener('change', handleMediaChange)
+  precargarIconos()
+  if (typeof window !== 'undefined' && window.innerWidth >= 768) {
+    initCanvas()
   }
 
-  precargarIconos()
+  if (canvasRef.value && canvasRef.value.parentElement) {
+    resizeObserver = new ResizeObserver(() => {
+      if (typeof window !== 'undefined') {
+        if (window.innerWidth >= 768) {
+          requestAnimationFrame(() => {
+            initCanvas()
+          })
+        } else if (simulation) {
+          simulation.stop()
+        }
+      }
+    })
+    resizeObserver.observe(canvasRef.value.parentElement)
+  }
 
-  if (!isMobile.value) {
-    initCanvas()
-
-    // manejo de rendimiento con desvinculacion geometrica
-    if (canvasRef.value && canvasRef.value.parentElement) {
-      resizeObserver = new ResizeObserver(() => {
-        // Debounce simple para no saturar el resize
-        requestAnimationFrame(() => {
-           if (!isMobile.value) initCanvas()
-        })
-      })
-      resizeObserver.observe(canvasRef.value.parentElement)
-    }
-
-    //intersection observer, detiene el d3 cuando sale de la pantalla para ahorrar CPU
-    if (canvasRef.value) {
-      intersectionObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (simulation) {
-            if (entry.isIntersecting) {
-              // devuelve la energia a los nodos al entrar
-              simulation.alphaTarget(0.02).restart()
-            } else {
-              // congela por completo los calculos matematicos al salir de pantalla para ahorrar CPU
-              simulation.stop()
-            }
+  if (canvasRef.value) {
+    intersectionObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (simulation && typeof window !== 'undefined' && window.innerWidth >= 768) {
+          if (entry.isIntersecting) {
+            simulation.alphaTarget(0.02).restart()
+          } else {
+            simulation.stop()
           }
-        })
-      }, {threshold: 0.1}) //se activa cuando almenos el 10% del canvas es visible
-      intersectionObserver.observe(canvasRef.value)
-    }
+        }
+      })
+    }, { threshold: 0.1 })
+    intersectionObserver.observe(canvasRef.value)
+  }
+  if (typeof document !== 'undefined') {
+    themeObserver = new MutationObserver(() => {
+      if (ctx && typeof window !== 'undefined' && window.innerWidth >= 768) {
+        dibujar()
+      }
+    })
+    themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
   }
 })
 
 onUnmounted(() => {
   if (simulation) simulation.stop()
-  if (mobileQuery) mobileQuery.removeEventListener('change', handleMediaChange)
   if (resizeObserver) resizeObserver.disconnect()
   if (intersectionObserver) intersectionObserver.disconnect()
+  if (themeObserver) themeObserver.disconnect()
 })
 </script>
 
 <template>
   <section id="habilidades"
-    class="relative w-full bg-dark overflow-hidden"
+    class="relative w-full bg-dark overflow-hidden scroll-mt-4 md:scroll-mt-6 py-10 md:py-16"
     aria-label="Sección — Habilidades Técnicas"
   >
-    <div class="absolute inset-0 bg-grid pointer-events-none opacity-20" />
-
-    <div class="section-container relative z-10 flex flex-col" style="min-height: 100vh;">
+    <!-- Contenedor Alineado -->
+    <div class="relative z-10 w-full max-w-6xl md:max-w-7xl mx-auto pl-10 pr-5 sm:px-8 lg:px-8">
 
       <!-- Encabezado -->
-      <div class="mb-8">
+      <div class="mb-6 w-full">
         <span class="status-badge mb-3">Stack Tecnológico</span>
-        <h2 class="text-3xl sm:text-4xl font-bold mt-3" style="color: var(--text-bright);">Habilidades</h2>
+        <h2 class="text-3xl sm:text-4xl font-bold mt-3 text-text-bright">
+          Habilidades &amp; Ecosistema
+        </h2>
       </div>
 
-      <!-- Filtros de Categoria -->
-      <div class="flex flex-wrap gap-3 mb-6">
+      <!-- Filtros de Categoría -->
+      <div class="flex flex-wrap gap-2.5 mb-6">
         <button
           v-for="f in filtros"
           :key="f.id"
           @click="aplicarFiltro(f.id)"
-          class="px-4 py-2 text-xs font-mono tracking-wide border rounded transition-colors"
-          :style="{
-            background: filtroActivo === f.id ? 'var(--color-primary-dim)' : 'transparent',
-            borderColor: filtroActivo === f.id ? 'var(--color-primary)' : 'var(--color-dark-400)',
-            color: filtroActivo === f.id ? 'var(--color-primary)' : 'var(--text-muted)',
-          }"
+          type="button"
+          class="skill-filter-chip px-3.5 py-1.5 text-xs font-mono tracking-wide rounded-lg transition-all cursor-pointer"
+          :class="filtroActivo === f.id ? 'skill-filter-chip-active' : 'skill-filter-chip-inactive'"
         >
           {{ f.etiqueta }}
         </button>
       </div>
 
-      <!-- Canvas D3 (Escritorio) -->
-      <div v-if="!isMobile" class="flex-grow relative w-full" style="min-height: 480px;">
-        <canvas
-          ref="canvasRef"
-          class="w-full h-8 cursor-grab active:cursor-grabbing"
-          style="min-height: 480px;"
-        ></canvas>
-      </div>
+      <!-- Modo Móvil (< 768px): Grilla táctil + Detalle -->
+      <div class="block md:hidden space-y-4">
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+          <button
+            v-for="tech in nodosFiltrados"
+            :key="tech.id"
+            @click="nodoSeleccionado = tech"
+            type="button"
+            class="skill-grid-card flex items-center gap-2.5 p-3 rounded-xl transition-all duration-200 cursor-pointer active:scale-95 text-left"
+            :class="nodoSeleccionado?.id === tech.id ? 'skill-grid-card-active' : ''"
+          >
+            <div class="skill-icon-box w-8 h-8 rounded-lg flex items-center justify-center p-1.5 shrink-0">
+              <img :src="tech.icono" :alt="tech.label" class="w-full h-full object-contain" />
+            </div>
+            <div class="min-w-0 flex-1">
+              <div class="skill-node-title text-xs font-semibold truncate">
+                {{ tech.label }}
+              </div>
+              <div class="text-[10px] font-mono text-text-muted truncate">
+                {{ tech.tipo }}
+              </div>
+            </div>
+          </button>
+        </div>
 
-      <!-- Cuadricula Estatica Movil -->
-      <div v-if="isMobile" class="grid grid-cols-3 gap-3 pt-4">
-        <div
-          v-for="nodo in nodosData"
-          :key="nodo.id"
-          class="flex flex-col items-center justify-center gap-2 p-3 border rounded-lg transition-opacity duration-200"
-          :style="{
-            opacity: filtroActivo === 0 || filtroActivo === nodo.group ? '1' : '0.18',
-            borderColor: filtroActivo === 0 || filtroActivo === nodo.group ? 'var(--color-primary)' : 'var(--color-dark-400)',
-            background: filtroActivo === 0 || filtroActivo === nodo.group ? 'var(--color-primary-dim)' : 'var(--color-dark-700)',
-          }"
-        >
-          <img :src="nodo.icono" :alt="nodo.label" class="w-8 h-8 object-contain" />
-          <span class="text-xs font-mono text-center" style="color: var(--text-base);">{{ nodo.label }}</span>
+        <div v-if="nodoSeleccionado" class="skill-hud-panel p-4 rounded-xl transition-all duration-200">
+          <div class="flex items-center gap-3 pb-3 border-b skill-divider">
+            <div class="skill-icon-box w-10 h-10 rounded-lg flex items-center justify-center p-1.5 shrink-0">
+              <img :src="nodoSeleccionado.icono" :alt="nodoSeleccionado.label" class="w-full h-full object-contain" />
+            </div>
+            <div class="min-w-0 flex-1">
+              <span class="skill-tipo-badge text-[10px] font-mono font-semibold uppercase tracking-wider block truncate">
+                {{ nodoSeleccionado.tipo }}
+              </span>
+              <h3 class="skill-node-title text-base font-bold truncate">
+                {{ nodoSeleccionado.label }}
+              </h3>
+            </div>
+          </div>
+
+          <div class="mt-3 space-y-3">
+            <div>
+              <div class="text-[10px] font-mono text-text-muted uppercase tracking-wider mb-1">Capacidades &amp; Rol</div>
+              <p class="skill-desc-text text-xs leading-relaxed">
+                {{ nodoSeleccionado.descripcion }}
+              </p>
+            </div>
+
+            <div>
+              <div class="text-[10px] font-mono text-text-muted uppercase tracking-wider mb-1.5">Proyectos implementados</div>
+              <div class="flex flex-wrap gap-1.5">
+                <span
+                  v-for="proy in nodoSeleccionado.proyectos"
+                  :key="proy"
+                  class="skill-proy-chip px-2.5 py-1 text-xs font-mono rounded"
+                >
+                  {{ proy }}
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- Habilidades Blandas — Matriz Estatica -->
-      <div class="mt-10 pt-6 border-t border-dark-400">
-        <div class="flex items-center gap-2 mb-4">
-          <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-          <div class="text-xs font-mono tracking-widest uppercase" style="color: var(--text-muted);">
-            Habilidades Blandas
+      <!-- Modo Escritorio (>= 768px): Canvas D3 + HUD -->
+      <div class="hidden md:grid md:grid-cols-12 gap-6 items-stretch">
+        <div class="skill-canvas-box md:col-span-7 rounded-2xl relative overflow-hidden h-[440px] flex items-center justify-center p-2">
+          <canvas
+            ref="canvasRef"
+            @click="handleCanvasClick"
+            @mousemove="handleMouseMove"
+            class="w-full h-full cursor-grab active:cursor-grabbing"
+          ></canvas>
+          <div class="absolute bottom-3 left-4 text-[10px] font-mono uppercase tracking-wider text-text-muted bg-dark-800/90 border border-dark-400 px-3 py-1 rounded pointer-events-none select-none">
+            [ NAVEGACIÓN ] Arrastre los nodos o seleccione para inspeccionar
           </div>
         </div>
 
-        <div class="relative w-full overflow-hidden fade-edges py-2">
-          <div class="flex w-max animate-ticker items-center">
-            <template v-for="n in 2" :key="'loop-'+n">
-              <div
-                v-for="(habilidad, i) in habilidadesBlandas"
-                :key="`${n}-${i}`"
-                class="flex items-center"
-              >
-                <span class="text-xs font-mono tracking-wider uppercase whitespace-nowrap px-6" style="color: var(--text-base);">
-                  {{ habilidad.etiqueta }}
-                </span>
-                <span style="color: var(--color-dark-400);">/</span>
+        <div class="skill-hud-panel md:col-span-5 rounded-2xl p-6 flex flex-col justify-between">
+          <div v-if="nodoSeleccionado">
+            <div class="flex items-center gap-3 pb-4 border-b skill-divider">
+              <div class="skill-icon-box w-12 h-12 rounded-xl flex items-center justify-center p-2 shrink-0">
+                <img :src="nodoSeleccionado.icono" :alt="nodoSeleccionado.label" class="w-full h-full object-contain" />
               </div>
-            </template>
+              <div>
+                <div class="skill-tipo-badge text-[11px] font-mono font-semibold uppercase tracking-wider">
+                  {{ nodoSeleccionado.tipo }}
+                </div>
+                <h3 class="skill-node-title text-xl font-bold leading-tight">
+                  {{ nodoSeleccionado.label }}
+                </h3>
+              </div>
+            </div>
+
+            <div class="mt-4 space-y-4">
+              <div>
+                <div class="text-xs font-mono text-text-muted uppercase tracking-wider mb-1">Capacidades &amp; Rol</div>
+                <p class="skill-desc-text text-xs sm:text-sm leading-relaxed">
+                  {{ nodoSeleccionado.descripcion }}
+                </p>
+              </div>
+
+              <div>
+                <div class="text-xs font-mono text-text-muted uppercase tracking-wider mb-2">Proyectos donde se implementó</div>
+                <div class="flex flex-wrap gap-1.5">
+                  <span
+                    v-for="proy in nodoSeleccionado.proyectos"
+                    :key="proy"
+                    class="skill-proy-chip px-2.5 py-1 text-xs font-mono rounded"
+                  >
+                    {{ proy }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="pt-4 border-t skill-divider mt-6 text-[11px] font-mono text-text-muted">
+            Ecosistema Interconectado · Tapia Tech Architecture
           </div>
         </div>
       </div>
@@ -367,26 +562,79 @@ onUnmounted(() => {
     </div>
   </section>
 </template>
+
 <style scoped>
-/* Animación infinita suave para el Data Stream */
-.animate-ticker {
-  animation: ticker 40s linear infinite;
+/* ── Canvas Box & HUD Panel ── */
+.skill-canvas-box {
+  background-color: var(--color-dark-700);
+  border: 1px solid var(--color-dark-400);
 }
 
-/* Pausar la animación si el usuario pasa el mouse por encima (opcional pero elegante) */
-.animate-ticker:hover {
-  animation-play-state: paused;
+.skill-hud-panel {
+  background-color: var(--color-dark-800);
+  border: 1px solid var(--color-dark-400);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4);
+}
+:root.light .skill-hud-panel {
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
 }
 
-@keyframes ticker {
-  0% { transform: translateX(0); }
-  /* Se mueve exactamente el 50% porque duplicamos la lista */
-  100% { transform: translateX(-50%); } 
+/* ── Tipografía y Badges ── */
+.skill-node-title {
+  color: var(--text-bright);
+}
+.skill-desc-text {
+  color: var(--text-base);
+}
+.skill-tipo-badge {
+  color: var(--color-primary);
 }
 
-/* Efecto de niebla en los bordes para que los textos no se corten feo */
-.fade-edges {
-  mask-image: linear-gradient(90deg, transparent 0%, black 10%, black 90%, transparent 100%);
-  -webkit-mask-image: linear-gradient(90deg, transparent 0%, black 10%, black 90%, transparent 100%);
+/* ── Chips y Cajas de Icono ── */
+.skill-icon-box,
+.skill-proy-chip {
+  background-color: var(--color-dark-700);
+  border: 1px solid var(--color-dark-400);
+  color: var(--text-base);
+}
+
+/* ── Tarjetas de la Grilla Móvil ── */
+.skill-grid-card {
+  background-color: var(--color-dark-800);
+  border: 1px solid var(--color-dark-400);
+  color: var(--text-base);
+}
+.skill-grid-card:hover {
+  border-color: var(--color-primary);
+}
+.skill-grid-card-active {
+  background-color: var(--color-primary-dim);
+  border: 1px solid var(--color-primary);
+  color: var(--text-bright);
+}
+:root.light .skill-grid-card-active {
+  color: var(--color-primary);
+}
+
+/* ── Filtros de Categoría ── */
+.skill-filter-chip-active {
+  background-color: var(--color-primary);
+  border: 1px solid var(--color-primary);
+  color: #FFFFFF !important;
+  font-weight: 600;
+}
+.skill-filter-chip-inactive {
+  background-color: var(--color-dark-800);
+  border: 1px solid var(--color-dark-400);
+  color: var(--text-muted);
+}
+.skill-filter-chip-inactive:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+/* ── Separadores ── */
+.skill-divider {
+  border-color: var(--color-dark-400);
 }
 </style>
