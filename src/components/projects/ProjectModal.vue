@@ -191,7 +191,7 @@ onUnmounted(() => {
   background-color: rgba(0, 0, 0, 0.75);
   backdrop-filter: blur(12px);
 }
-:root.light .modal-backdrop {
+:global(.light) .modal-backdrop {
   background-color: rgba(15, 23, 42, 0.45);
 }
 

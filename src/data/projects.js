@@ -48,7 +48,7 @@ export const proyectos = [
     tipoEstado: 'terminado',
     rol: 'Desarrollador Flutter',
     stack: ['Flutter', 'Supabase', 'Hive', 'GoRouter'],
-    repo: 'https://github.com/ElTapiaGit/cosechapp-web-mobile.git',
+    repo: 'https://github.com/ElTapiaGit/cosechapp-analytics.git',
     arquitectura: 'MVVM / Clean Architecture',
     imagen: '/asset/images/banner-cosechapp.webp',
     categoria: 'Móvil',
@@ -60,7 +60,7 @@ export const proyectos = [
       'Sincronización automática de datos pendientes al restablecerse la conexión a internet.'
     ],
     links: {
-      github: 'https://github.com/ElTapiaGit/cosechapp-web-mobile.git',
+      github: 'https://github.com/ElTapiaGit/cosechapp-analytics.git',
       playstore: null,
       live: null
     }

@@ -51,8 +51,7 @@ const scrollToSection = (hash) => {
 
   <!-- Panel Lateral Drawer (Consume tokens globales de style.css) -->
   <nav
-    class="fixed top-0 left-0 h-full w-64 md:w-72 nav-backdrop z-[100] border-r border-dark-400 flex flex-col p-6 md:p-8 transition-transform duration-500 shadow-2xl"
-    style="transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);"
+    class="fixed top-0 left-0 h-full w-64 md:w-72 nav-backdrop z-[100] border-r border-dark-400 flex flex-col p-6 md:p-8 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] shadow-2xl"
     :class="isOpen ? 'translate-x-0' : '-translate-x-full'"
     aria-label="Menú Principal"
   >

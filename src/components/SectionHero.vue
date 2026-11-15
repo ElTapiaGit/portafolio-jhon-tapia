@@ -102,30 +102,26 @@ onUnmounted(() => {
 
         <h1
           ref="nameEl"
-          class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-tight opacity-0"
-          style="color: var(--text-bright);"
+          class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-tight opacity-0 text-text-bright"
         >
           {{ FULL_NAME }}
         </h1>
 
         <div
           ref="lineEl"
-          class="mt-2.5 mb-2.5 sm:mt-4 sm:mb-5 h-px w-full max-w-[200px] sm:max-w-[260px] origin-left scale-x-0 opacity-0"
-          style="background: var(--color-primary);"
+          class="mt-2.5 mb-2.5 sm:mt-4 sm:mb-5 h-px w-full max-w-[200px] sm:max-w-[260px] origin-left scale-x-0 opacity-0 bg-primary"
         />
 
         <p
           ref="roleEl"
-          class="font-mono text-xs sm:text-sm md:text-base tracking-wide opacity-0"
-          style="color: var(--text-base); clip-path: inset(100% 0% 0%);"
+          class="font-mono text-xs sm:text-sm md:text-base tracking-wide opacity-0 text-text-base [clip-path:inset(100%_0%_0%)]"
         >
           {{ ROLE_TEXT }}
         </p>
 
         <p
           ref="brandEl"
-          class="mt-1 font-mono text-[11px] sm:text-xs md:text-sm tracking-wider uppercase opacity-0"
-          style="color: var(--text-muted); clip-path: inset(100% 0% 0%);"
+          class="mt-1 font-mono text-[11px] sm:text-xs md:text-sm tracking-wider uppercase opacity-0 text-text-muted [clip-path:inset(100%_0%_0%)]"
         >
           {{ BRAND_TEXT }}
         </p>
@@ -218,11 +214,11 @@ onUnmounted(() => {
   border: 1px solid var(--color-dark-400);
 }
 
-:root.light .hero-frame,
-:root.light .hero-curtain {
+:global(.light) .hero-frame,
+:global(.light) .hero-curtain {
   background-color: var(--color-dark-800);
 }
-:root.light .hero-frame {
+:global(.light) .hero-frame {
   border-color: var(--color-dark-600);
   box-shadow: 0 20px 25px -5px rgba(15, 23, 42, 0.08);
 }
@@ -242,7 +238,7 @@ onUnmounted(() => {
 .hero-card-fade {
   background: linear-gradient(to top, rgba(14, 17, 24, 0.75) 0%, transparent 22%);
 }
-:root.light .hero-card-fade {
+:global(.light) .hero-card-fade {
   background: linear-gradient(to top, rgba(255, 255, 255, 0.8) 0%, transparent 22%);
 }
 </style>

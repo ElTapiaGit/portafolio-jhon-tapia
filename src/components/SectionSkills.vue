@@ -488,7 +488,7 @@ onUnmounted(() => {
   border: 1px solid var(--color-dark-400);
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4);
 }
-:root.light .skill-hud-panel {
+:global(.light) .skill-hud-panel {
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
 }
 
@@ -525,7 +525,7 @@ onUnmounted(() => {
   border: 1px solid var(--color-primary);
   color: var(--text-bright);
 }
-:root.light .skill-grid-card-active {
+:global(.light) .skill-grid-card-active {
   color: var(--color-primary);
 }
 
