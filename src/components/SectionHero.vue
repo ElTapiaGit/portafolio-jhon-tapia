@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import gsap from 'gsap'
 
 /* ── Referencias del DOM ── */
@@ -19,60 +19,69 @@ const ROLE_TEXT = 'Ingeniero de Sistemas — Desarrollador Full Stack'
 const BRAND_TEXT = 'Tapia Tech · Software Development & Solutions'
 const IMAGE_SRC = '/asset/images/perfil-remove.webp'
 
+/* ── Contexto de Animación GSAP ── */
+let ctx
+
 /* ── Animación Inicial Coordinada ── */
 onMounted(() => {
-  const masterTl = gsap.timeline({ delay: 0.1 })
+  ctx = gsap.context(() => {
+    const masterTl = gsap.timeline({ delay: 0.1 })
 
-  // 1. Entrada del contenedor de la foto
-  masterTl.fromTo(fotoEl.value,
-    { opacity: 0, scale: 0.98 },
-    { opacity: 1, scale: 1, duration: 0.35, ease: 'power2.out' },
-    0
-  )
+    // 1. Entrada del contenedor de la foto
+    masterTl.fromTo(fotoEl.value,
+      { opacity: 0, scale: 0.98 },
+      { opacity: 1, scale: 1, duration: 0.35, ease: 'power2.out' },
+      0
+    )
 
-  // 2. Apertura simétrica de cortinas desde el centro
-  masterTl.fromTo([curtainTopEl.value, curtainBottomEl.value],
-    { scaleY: 1 },
-    { scaleY: 0, duration: 0.85, ease: 'power2.inOut' },
-    0.15
-  )
-  .to('.hero-scan-bar', {
-    opacity: 0,
-    duration: 0.2,
-    ease: 'power2.out'
-  }, '-=0.15')
+    // 2. Apertura simétrica de cortinas desde el centro
+    masterTl.fromTo([curtainTopEl.value, curtainBottomEl.value],
+      { scaleY: 1 },
+      { scaleY: 0, duration: 0.85, ease: 'power2.inOut' },
+      0.15
+    )
+    .to('.hero-scan-bar', {
+      opacity: 0,
+      duration: 0.2,
+      ease: 'power2.out'
+    }, '-=0.15')
 
-  // 3. Entrada secuencial del texto
-  masterTl.fromTo(statusEl.value,
-    { opacity: 0, y: 8 },
-    { opacity: 1, y: 0, duration: 0.3, ease: 'power2.out' },
-    0.05
-  )
-  .fromTo(nameEl.value,
-    { opacity: 0, y: 12 },
-    { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' },
-    0.15
-  )
-  .fromTo(lineEl.value,
-    { scaleX: 0, opacity: 0 },
-    { scaleX: 1, opacity: 1, duration: 0.35, ease: 'power3.out' },
-    0.25
-  )
-  .fromTo(roleEl.value,
-    { clipPath: 'inset(100% 0% 0% 0%)', opacity: 0, y: 10 },
-    { clipPath: 'inset(0% 0% 0% 0%)', opacity: 1, y: 0, duration: 0.36, ease: 'power2.out' },
-    0.3
-  )
-  .fromTo(brandEl.value,
-    { clipPath: 'inset(100% 0% 0% 0%)', opacity: 0, y: 10 },
-    { clipPath: 'inset(0% 0% 0% 0%)', opacity: 1, y: 0, duration: 0.36, ease: 'power2.out' },
-    0.38
-  )
-  .fromTo(ctasEl.value,
-    { opacity: 0, y: 10 },
-    { opacity: 1, y: 0, duration: 0.32, ease: 'power2.out' },
-    0.45
-  )
+    // 3. Entrada secuencial del texto
+    masterTl.fromTo(statusEl.value,
+      { opacity: 0, y: 8 },
+      { opacity: 1, y: 0, duration: 0.3, ease: 'power2.out' },
+      0.05
+    )
+    .fromTo(nameEl.value,
+      { opacity: 0, y: 12 },
+      { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' },
+      0.15
+    )
+    .fromTo(lineEl.value,
+      { scaleX: 0, opacity: 0 },
+      { scaleX: 1, opacity: 1, duration: 0.35, ease: 'power3.out' },
+      0.25
+    )
+    .fromTo(roleEl.value,
+      { clipPath: 'inset(100% 0% 0% 0%)', opacity: 0, y: 10 },
+      { clipPath: 'inset(0% 0% 0% 0%)', opacity: 1, y: 0, duration: 0.36, ease: 'power2.out' },
+      0.3
+    )
+    .fromTo(brandEl.value,
+      { clipPath: 'inset(100% 0% 0% 0%)', opacity: 0, y: 10 },
+      { clipPath: 'inset(0% 0% 0% 0%)', opacity: 1, y: 0, duration: 0.36, ease: 'power2.out' },
+      0.38
+    )
+    .fromTo(ctasEl.value,
+      { opacity: 0, y: 10 },
+      { opacity: 1, y: 0, duration: 0.32, ease: 'power2.out' },
+      0.45
+    )
+  })
+})
+
+onUnmounted(() => {
+  ctx?.revert()
 })
 </script>
 

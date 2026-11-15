@@ -1,6 +1,8 @@
 <script setup>
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
-import * as d3 from 'd3'
+import { forceSimulation, forceManyBody, forceLink, forceCollide, forceCenter, forceX, forceY } from 'd3-force'
+import { drag } from 'd3-drag'
+import { select } from 'd3-selection'
 import { nodosData, linksData, filtros } from '../data/skills.js'
 import { useTheme } from '../composables/useTheme.js'
 
@@ -60,16 +62,15 @@ function initCanvas() {
 
   if (simulation) simulation.stop()
 
-  simulation = d3.forceSimulation(nodes)
-    .force('charge', d3.forceManyBody().strength(-190))
-    .force('link', d3.forceLink(links).id(d => d.id).distance(110))
-    .force('collide', d3.forceCollide().radius(46).iterations(2))
-    .force('center', d3.forceCenter(width / 2, height / 2))
-    .alphaTarget(0.02)
+  simulation = forceSimulation(nodes)
+    .force('charge', forceManyBody().strength(-190))
+    .force('link', forceLink(links).id(d => d.id).distance(110))
+    .force('collide', forceCollide().radius(46).iterations(2))
+    .force('center', forceCenter(width / 2, height / 2))
     .on('tick', dibujar)
 
-  d3.select(canvasRef.value)
-    .call(d3.drag()
+  select(canvasRef.value)
+    .call(drag()
       .container(canvasRef.value)
       .subject(objetoDrag)
       .on('start', iniciarDrag)
@@ -195,7 +196,7 @@ function arrastrar(event) {
 }
 
 function soltarDrag(event) {
-  if (!event.active) simulation.alphaTarget(0.02)
+  if (!event.active) simulation.alphaTarget(0)
   event.subject.fx = null
   event.subject.fy = null
 }
@@ -258,14 +259,14 @@ function aplicarFiltro(grupo) {
   simulation.force('center', null)
 
   if (grupo === 0) {
-    simulation.force('x', d3.forceX(width / 2).strength(0.05))
-    simulation.force('y', d3.forceY(height / 2).strength(0.05))
+    simulation.force('x', forceX(width / 2).strength(0.05))
+    simulation.force('y', forceY(height / 2).strength(0.05))
   } else {
-    simulation.force('x', d3.forceX()
+    simulation.force('x', forceX()
       .strength(d => d.group === grupo ? 0.12 : 0.03)
       .x(d => d.group === grupo ? width / 2 : (d.x < width / 2 ? 70 : width - 70))
     )
-    simulation.force('y', d3.forceY()
+    simulation.force('y', forceY()
       .strength(d => d.group === grupo ? 0.12 : 0.03)
       .y(d => d.group === grupo ? height / 2 : (d.y < height / 2 ? 70 : height - 70))
     )
@@ -300,7 +301,7 @@ onMounted(() => {
       entries.forEach(entry => {
         if (simulation && typeof window !== 'undefined' && window.innerWidth >= 768) {
           if (entry.isIntersecting) {
-            simulation.alphaTarget(0.02).restart()
+            simulation.alpha(0.3).restart()
           } else {
             simulation.stop()
           }
