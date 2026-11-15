@@ -1,8 +1,9 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
+import { useTheme } from '../composables/useTheme.js'
 
 const isOpen = ref(false)
-const isDark = ref(true)
+const { isDark, toggleTheme } = useTheme()
 
 const navItems = [
   { id: 'hero', label: '00. INICIO', href: '#hero' },
@@ -21,27 +22,6 @@ const scrollToSection = (hash) => {
     element.scrollIntoView({ behavior: 'smooth' })
   }
   isOpen.value = false
-}
-
-/* ── Lógica de Tema ── */
-onMounted(() => {
-  const savedTheme = localStorage.getItem('tapia-theme')
-  if (savedTheme === 'light') {
-    isDark.value = false
-    document.documentElement.classList.add('light')
-  }
-})
-
-const toggleTheme = () => {
-  isDark.value = !isDark.value
-  
-  if (isDark.value) {
-    document.documentElement.classList.remove('light')
-    localStorage.setItem('tapia-theme', 'dark')
-  } else {
-    document.documentElement.classList.add('light')
-    localStorage.setItem('tapia-theme', 'light')
-  }
 }
 </script>
 
