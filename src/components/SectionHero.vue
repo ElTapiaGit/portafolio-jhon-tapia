@@ -114,10 +114,9 @@ onMounted(() => {
       { yPercent: 0, duration: 0.9, stagger: 0.1, ease: 'power4.out' },
       0
     )
-    .fromTo(photoRef.value,
-      { y: 40, opacity: 0, scale: 0.97 },
-      { y: 0, opacity: 1, scale: 1, duration: 1, ease: 'power3.out' },
-      0.2
+    .from(photoRef.value,
+      { opacity: 0, y: 40, scale: 0.97, duration: 1, ease: 'power3.out' },
+      0.1
     )
     .fromTo(infoRef.value,
       { y: 20, opacity: 0 },
@@ -180,10 +179,10 @@ onUnmounted(() => {
           ref="photoRef"
           :src="IMAGE_SRC"
           alt="Jhon Eligio Tapia Vargas"
-          class="hero-photo block h-[58vh] sm:h-[62vh] md:h-[78vh] lg:h-[85vh] max-h-[860px] w-auto max-w-none object-contain object-bottom opacity-0"
+          class="hero-photo block h-[58vh] sm:h-[62vh] md:h-[78vh] lg:h-[85vh] max-h-[860px] w-auto max-w-none object-contain object-bottom"
           loading="eager"
           fetchpriority="high"
-          decoding="async"
+          decoding="sync"
         />
       </div>
     </div>

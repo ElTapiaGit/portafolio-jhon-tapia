@@ -164,5 +164,54 @@ export const proyectos = [
       playstore: null,
       live: null
     }
+  },
+  {
+    id: 'crm-whatsapp',
+    titulo: 'CRM WhatsApp Agent — Producto Comercial',
+    categoria: 'Web',
+    estado: 'En Desarrollo',
+    tipoEstado: 'desarrollo',
+    rol: 'Creador & Arquitecto Full Stack',
+    arquitectura: 'Client-Server Desacoplado',
+    imagen: '/asset/images/crm-whatsapp.webp',
+    problem: 'Desarrollo de una plataforma CRM propietaria para comercialización SaaS, diseñada para resolver la gestión ineficiente de clientes y la falta de analíticas en canales corporativos de WhatsApp.',
+    architecture: 'Sistema comercial distribuido y de código cerrado. Backend de alto rendimiento (Node.js/Fastify) integrado con la API oficial de Meta, utilizando colas BullMQ y agentes LLM Groq. Frontend SPA en Vue 3 para la orquestación de chats en tiempo real vía WebSockets.',
+    keyHighlights: [
+      'Ingesta asíncrona desacoplada con validación criptográfica HMAC SHA-256 para webhooks de Meta API.',
+      'Motor de IA autónomo (Llama 3/Groq) con RAG y Function Calling nativo para automatización de negocio.',
+      'Sincronización bidireccional en tiempo real con operadores humanos mediante Socket.io.',
+      'Producto propietario actualmente en fase de desarrollo arquitectónico y pruebas unitarias core.'
+    ],
+    stack: ['Vue 3', 'Fastify', 'TypeScript', 'Redis', 'PostgreSQL'],
+    links: {
+      github: null,
+      playstore: null,
+      live: null
+    }
+  },
+  {
+    id: 'notifier-api',
+    titulo: 'Notifier API — Sistema Criptográfico OTP',
+    descripcion: 'Microservicio desacoplado para la generación, despacho y validación criptográfica de códigos de un solo uso (OTP) con control de expiración.',
+    estado: 'Producción',
+    tipoEstado: 'terminado',
+    rol: 'Backend Engineer',
+    stack: ['Node.js', 'TypeScript', 'Express', 'PostgreSQL'],
+    repo: 'https://github.com/ElTapiaGit/notifier-api',
+    arquitectura: 'Microservicio REST',
+    imagen: '/asset/images/notifier-api.webp',
+    categoria: 'Backend / IA',
+    problem: 'Necesidad de un sistema seguro, aislado y de alta disponibilidad para la generación criptográfica, despacho y verificación de códigos de un solo uso (OTP) a través de múltiples plataformas.',
+    architecture: 'Microservicio desacoplado construido en Node.js y Express con TypeScript estricto, respaldado por PostgreSQL para el control de integridad, transacciones y validación de expiración temporal.',
+    keyHighlights: [
+      'Generación segura y verificación criptográfica de tokens OTP.',
+      'Control riguroso de tiempos de expiración para prevenir ataques de repetición.',
+      'Arquitectura tipada y modular lista para ser consumida como microservicio por otros sistemas del ecosistema.'
+    ],
+    links: {
+      github: 'https://github.com/ElTapiaGit/notifier-api',
+      playstore: null,
+      live: null
+    }
   }
 ]

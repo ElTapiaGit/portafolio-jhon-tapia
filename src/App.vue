@@ -13,8 +13,11 @@ import { onMounted, onUnmounted } from 'vue'
 import Lenis from 'lenis'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { useLenis } from './composables/useLenis.js'
 
 gsap.registerPlugin(ScrollTrigger)
+
+const { setLenis } = useLenis()
 
 /* ── Importación de Secciones ─── */
 import ControlPanel from './components/ControlPanel.vue'
@@ -43,6 +46,9 @@ onMounted(() => {
     touchMultiplier: 2,
   })
 
+  // Guardar instancia en el composable global
+  setLenis(lenisInstance)
+
   // Sincronizar Lenis con GSAP ScrollTrigger
   lenisInstance.on('scroll', ScrollTrigger.update)
 
@@ -58,6 +64,7 @@ onUnmounted(() => {
   if (lenisInstance) {
     lenisInstance.destroy()
     lenisInstance = null
+    setLenis(null)
   }
 })
 </script>
