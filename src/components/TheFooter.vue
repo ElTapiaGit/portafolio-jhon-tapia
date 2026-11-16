@@ -1,243 +1,440 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import emailjs from '@emailjs/browser'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { useTheme } from '../composables/useTheme.js'
 
-/* ── Estado Reactivo ── */
+gsap.registerPlugin(ScrollTrigger)
+
+const { isDark } = useTheme()
+
+/* ── Referencias del DOM ── */
+const footerRef = ref(null)
+const kickerRef = ref(null)
+const lineRef = ref(null)
+const titleRef = ref(null)
+const leftColRef = ref(null)
+const rightColRef = ref(null)
+
+/* ── Estado Reactivo del Formulario ── */
 const anioActual = ref(new Date().getFullYear())
-
-const formulario = ref({
-  endpoint: '/api/v1/contacto',
-  metodo: 'POST',
-  cuerpo: {
-    nombre: '',
-    email: '',
-    mensaje: ''
-  }
-})
-
-const logTerminal = ref([])
+const nombre = ref('')
+const email = ref('')
+const mensaje = ref('')
 const estado = ref('IDLE') // IDLE, ENVIANDO, ENVIADO, ERROR
+const mensajeFeedback = ref('')
+const feedbackTipo = ref('') // 'error', 'exito', 'info'
+
+let gsapCtx = null
 
 /* ── Envío del Formulario a EmailJS ── */
 async function enviarFormulario() {
   if (estado.value === 'ENVIANDO') return
 
-  const { nombre, email, mensaje } = formulario.value.cuerpo
-
-  if (!nombre.trim() || !email.trim() || !mensaje.trim()) {
+  if (!nombre.value.trim() || !email.value.trim() || !mensaje.value.trim()) {
     estado.value = 'ERROR'
-    logTerminal.value = [{ tipo: 'error', msg: '> 422 ERROR: Campos incompletos o vacíos' }]
+    feedbackTipo.value = 'error'
+    mensajeFeedback.value = 'Por favor completa todos los campos requeridos.'
     return
   }
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-  if (!emailRegex.test(email)) {
+  if (!emailRegex.test(email.value)) {
     estado.value = 'ERROR'
-    logTerminal.value = [{ tipo: 'error', msg: '> 422 ERROR: Estructura de email inválida.' }]
+    feedbackTipo.value = 'error'
+    mensajeFeedback.value = 'Ingresa un correo electrónico válido.'
     return
   }
 
   estado.value = 'ENVIANDO'
-  anioActual.value = new Date().getFullYear()
-  logTerminal.value = [{ tipo: 'info', msg: '> Inicializando handshake con API...' }]
+  feedbackTipo.value = 'info'
+  mensajeFeedback.value = 'Transmitiendo mensaje...'
 
   try {
     await emailjs.send(
       import.meta.env.VITE_SERVICE_ID,
       import.meta.env.VITE_TEMPLATE_ID,
-      { nombre: nombre, correo: email, mensaje: mensaje },
+      { nombre: nombre.value, correo: email.value, mensaje: mensaje.value },
       import.meta.env.VITE_TEMPLATE_PARAMS
     )
 
     estado.value = 'ENVIADO'
-    logTerminal.value.push({ tipo: 'exito', msg: '> 200 OK: Payload entregado correctamente.' })
-    
-    formulario.value.cuerpo = { nombre: '', email: '', mensaje: '' }
-    
-    setTimeout(() => { 
+    feedbackTipo.value = 'exito'
+    mensajeFeedback.value = 'Mensaje enviado correctamente. Me pondré en contacto contigo pronto.'
+
+    nombre.value = ''
+    email.value = ''
+    mensaje.value = ''
+
+    setTimeout(() => {
       estado.value = 'IDLE'
-      logTerminal.value = [] 
-    }, 4000)
+      mensajeFeedback.value = ''
+    }, 5000)
   } catch (error) {
     estado.value = 'ERROR'
-    logTerminal.value.push({ tipo: 'error', msg: '> 500 ERROR: Fallo en la infraestructura de transporte.' })
+    feedbackTipo.value = 'error'
+    mensajeFeedback.value = 'Ocurrió un error al enviar el mensaje. Por favor intenta de nuevo o escríbeme por WhatsApp.'
     console.error(error)
   }
 }
 
 function etiquetaBoton() {
-  if (estado.value === 'ENVIANDO') return 'STATUS: ENVIANDO...'
+  if (estado.value === 'ENVIANDO') return 'Enviando...'
   if (estado.value === 'ERROR') return 'Reintentar Envío'
-  if (estado.value === 'ENVIADO') return 'Mensaje Enviado [OK]'
+  if (estado.value === 'ENVIADO') return 'Mensaje Enviado'
   return 'Enviar Mensaje'
 }
+
+function volverArriba() {
+  const hero = document.getElementById('hero')
+  if (hero) {
+    hero.scrollIntoView({ behavior: 'smooth' })
+  } else {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+}
+
+onMounted(() => {
+  gsapCtx = gsap.context(() => {
+    gsap.set(kickerRef.value, { opacity: 0, x: -16 })
+    gsap.set(lineRef.value, { scaleX: 0 })
+    gsap.set(titleRef.value, { yPercent: 110 })
+    gsap.set([leftColRef.value, rightColRef.value], { opacity: 0, y: 32 })
+
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: footerRef.value,
+        start: 'top 65%',
+        toggleActions: 'play none none reverse'
+      }
+    })
+
+    tl.to(kickerRef.value, { opacity: 1, x: 0, duration: 0.45, ease: 'power2.out' }, 0)
+      .to(lineRef.value, { scaleX: 1, duration: 0.75, ease: 'power3.inOut' }, 0.05)
+      .to(titleRef.value, { yPercent: 0, duration: 0.8, ease: 'power4.out' }, 0.1)
+      .to([leftColRef.value, rightColRef.value], {
+        opacity: 1,
+        y: 0,
+        duration: 0.7,
+        stagger: 0.14,
+        ease: 'power3.out',
+        clearProps: 'transform'
+      }, 0.28)
+  }, footerRef.value)
+})
+
+onUnmounted(() => {
+  gsapCtx?.revert()
+})
 </script>
 
 <template>
   <footer
     id="contacto"
-    class="relative w-full border-t border-dark-400 bg-dark transition-colors scroll-mt-4 md:scroll-mt-6 pt-10 md:pt-16"
+    ref="footerRef"
+    class="relative w-full border-t border-dark-400 footer-section overflow-hidden transition-colors scroll-mt-0"
+    :class="isDark ? 'is-dark' : 'is-light'"
     aria-label="Sección — Contacto y Pie de Página"
   >
-    <!-- Contenedor Alineado con Hero, About y Proyectos -->
-    <div class="relative z-10 w-full max-w-6xl md:max-w-7xl mx-auto pl-10 pr-5 sm:px-8 lg:px-8 pb-12 md:pb-16">
+    <!-- Marca de Agua Estructural (04) -->
+    <span
+      aria-hidden="true"
+      class="footer-watermark absolute -top-6 right-4 md:right-12 font-sans font-black text-[9rem] sm:text-[13rem] md:text-[17rem] leading-none tracking-tighter select-none pointer-events-none z-0"
+    >
+      04
+    </span>
 
-      <!-- Encabezado de Sección -->
-      <div class="mb-10 w-full">
-        <span class="status-badge mb-3">Contacto</span>
-        <h2 class="text-3xl lg:text-4xl font-bold mt-3 text-text-bright">Iniciar Proyecto</h2>
-        <p class="mt-2 text-sm text-text-muted">Completa el formulario y recibirás respuesta en menos de 24 horas</p>
+    <!-- Contenedor Maestro -->
+    <div class="relative z-10 w-full max-w-7xl mx-auto pl-10 pr-5 sm:px-8 md:px-12 lg:px-16 pt-16 md:pt-24 lg:pt-28 pb-16 md:pb-20">
+
+      <!-- Encabezado Brutalista -->
+      <div class="mb-10 md:mb-14">
+        <div class="flex items-center gap-4 mb-3">
+          <span ref="kickerRef" class="font-mono text-xs sm:text-sm font-semibold uppercase tracking-[0.2em] text-primary">
+            04 — Contacto &amp; Disponibilidad
+          </span>
+          <div ref="lineRef" class="h-px flex-1 bg-dark-400 origin-left"></div>
+        </div>
+        <div class="overflow-hidden py-1">
+          <h2 ref="titleRef" class="font-sans font-black uppercase tracking-[-0.03em] text-3xl sm:text-5xl lg:text-6xl leading-[0.95] text-text-bright">
+            INICIAR PROYECTO
+          </h2>
+        </div>
       </div>
 
-      <!-- Layout de Dos Paneles -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 items-start">
+      <!-- Grid Editorial de 2 Columnas -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start">
 
-        <!-- PANEL IZQUIERDO: Formulario Gateway -->
-        <div class="flex flex-col gap-5">
+        <!-- COLUMNA IZQUIERDA: Propuesta de Valor y Canales Directos -->
+        <div ref="leftColRef" class="lg:col-span-5 flex flex-col justify-between">
+          <div>
+            <h3 class="font-sans font-bold text-xl sm:text-2xl lg:text-[1.65rem] leading-[1.25] tracking-tight text-text-bright">
+              ¿Tienes un proyecto en mente o necesitas escalar un sistema existente?
+            </h3>
+            <p class="font-sans text-sm sm:text-base leading-relaxed text-text-base mt-3">
+              Escríbeme directamente por cualquiera de estos canales o envíame los detalles a través del formulario.
+            </p>
 
-          <!-- Método y Endpoint -->
-          <div class="flex items-center gap-3 font-mono text-sm pb-3 border-b border-dark-400">
-            <span class="px-2 py-0.5 rounded text-xs font-bold bg-emerald-500/10 text-emerald-500 border border-emerald-500/30">
-              {{ formulario.metodo }}
-            </span>
-            <span class="text-text-muted font-medium">{{ formulario.endpoint }}</span>
-          </div>
+            <!-- Tarjetas de Contacto Directo -->
+            <div class="mt-8 flex flex-col gap-3.5">
+              <!-- Tarjeta 1: WhatsApp Directo -->
+              <a
+                href="https://wa.me/59174303370"
+                target="_blank"
+                rel="noopener"
+                class="contact-card group flex items-center justify-between p-4 rounded-md border transition-all"
+              >
+                <div>
+                  <span class="font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-primary block mb-0.5">
+                    RESPUESTA INMEDIATA · WHATSAPP
+                  </span>
+                  <span class="font-sans font-bold text-sm sm:text-base text-text-bright group-hover:text-primary transition-colors">
+                    Iniciar conversación en WhatsApp
+                  </span>
+                </div>
+                <div class="p-2 rounded border border-dark-400 text-text-muted group-hover:text-primary group-hover:border-primary transition-colors">
+                  <svg class="w-4 h-4 transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                  </svg>
+                </div>
+              </a>
 
-          <!-- Campo: Nombre -->
-          <div class="flex flex-col gap-1.5">
-            <label for="nombreInput" class="text-xs font-mono tracking-widest font-bold text-text-base">"nombre"</label>
-            <input
-              id="nombreInput"
-              v-model="formulario.cuerpo.nombre"
-              type="text"
-              placeholder="Tu nombre completo..."
-              class="w-full bg-transparent border-b border-dark-400 text-sm pb-2 outline-none text-text-bright placeholder:text-text-muted/50 focus:border-primary transition-colors"
-            />
-          </div>
+              <!-- Tarjeta 2: Correo Electrónico -->
+              <a
+                href="mailto:tapiajhon111@gmail.com"
+                class="contact-card group flex items-center justify-between p-4 rounded-md border transition-all"
+              >
+                <div>
+                  <span class="font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-primary block mb-0.5">
+                    CORREO ELECTRÓNICO DIRECTO
+                  </span>
+                  <span class="font-sans font-bold text-sm sm:text-base text-text-bright group-hover:text-primary transition-colors">
+                    tapiajhon111@gmail.com
+                  </span>
+                </div>
+                <div class="p-2 rounded border border-dark-400 text-text-muted group-hover:text-primary group-hover:border-primary transition-colors">
+                  <svg class="w-4 h-4 transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                </div>
+              </a>
+            </div>
 
-          <!-- Campo: Email -->
-          <div class="flex flex-col gap-1.5">
-            <label for="emailInput" class="text-xs font-mono tracking-widest font-bold text-text-base">"email"</label>
-            <input
-              id="emailInput"
-              v-model="formulario.cuerpo.email"
-              type="email"
-              placeholder="tu@correo.com"
-              class="w-full bg-transparent border-b border-dark-400 text-sm pb-2 outline-none text-text-bright placeholder:text-text-muted/50 focus:border-primary transition-colors"
-            />
-          </div>
-
-          <!-- Campo: Mensaje -->
-          <div class="flex flex-col gap-1.5">
-            <label for="mensajeInput" class="text-xs font-mono tracking-widest font-bold text-text-base">"mensaje"</label>
-            <textarea
-              id="mensajeInput"
-              v-model="formulario.cuerpo.mensaje"
-              rows="4"
-              placeholder="Describe tu proyecto o consulta..."
-              class="w-full bg-transparent border-b border-dark-400 text-sm pb-2 outline-none text-text-bright placeholder:text-text-muted/50 focus:border-primary resize-none transition-colors"
-            ></textarea>
-          </div>
-
-          <!-- Botón de Envío -->
-          <button
-            type="button"
-            @click="enviarFormulario"
-            :disabled="estado === 'ENVIANDO'"
-            class="btn-primary w-fit self-start mt-2 px-6 py-2.5 rounded-lg font-mono text-xs uppercase tracking-wider font-semibold disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
-          >
-            {{ etiquetaBoton() }}
-          </button>
-
-          <!-- Banner de respuesta en celular (Oculto en desktop por CSS) -->
-          <div
-            v-if="logTerminal.length > 0"
-            class="block md:hidden mt-2 p-3 rounded-lg border font-mono text-xs bg-dark-800"
-            :class="estado === 'ENVIADO' ? 'border-emerald-500' : estado === 'ERROR' ? 'border-red-500' : 'border-dark-400'"
-          >
-            <div
-              v-for="(log, i) in logTerminal"
-              :key="i"
-              :class="log.tipo === 'error' ? 'text-red-500' : log.tipo === 'exito' ? 'text-emerald-500' : 'text-text-muted'"
-            >
-              {{ log.msg }}
+            <!-- Enlaces Limpios de Redes -->
+            <div class="mt-6 pt-5 border-t border-dark-400 flex items-center gap-5 font-mono text-xs">
+              <a
+                href="https://github.com/ElTapiaGit"
+                target="_blank"
+                rel="noopener"
+                class="inline-flex items-center gap-1 text-text-muted hover:text-primary transition-colors"
+              >
+                <span>GitHub</span>
+                <span class="text-[10px]">↗</span>
+              </a>
+              <a
+                href="https://linkedin.com/in/jhon-e-tapia-vargas-068b6a3ba"
+                target="_blank"
+                rel="noopener"
+                class="inline-flex items-center gap-1 text-text-muted hover:text-primary transition-colors"
+              >
+                <span>LinkedIn</span>
+                <span class="text-[10px]">↗</span>
+              </a>
             </div>
           </div>
-
         </div>
 
-        <!-- PANEL DERECHO: Consola JSON y Logs (Oculto en celular por CSS sin CLS) -->
-        <div class="hidden md:flex flex-col gap-4">
+        <!-- COLUMNA DERECHA: Panel de Formulario Ejecutivo -->
+        <div ref="rightColRef" class="lg:col-span-7">
+          <div class="contact-panel rounded-md border p-6 sm:p-8">
+            <form @submit.prevent="enviarFormulario" class="space-y-4">
+              <!-- Campo: Nombre -->
+              <div>
+                <label for="nombreInput" class="font-mono text-[11px] font-bold uppercase tracking-[0.12em] mb-2 block text-text-bright">
+                  Nombre Completo
+                </label>
+                <input
+                  id="nombreInput"
+                  v-model="nombre"
+                  type="text"
+                  placeholder="Ej. Alex Turner"
+                  class="w-full rounded-md border px-4 py-3 font-sans text-sm outline-none transition-colors contact-input"
+                  required
+                />
+              </div>
 
-          <!-- Barra de Título del IDE -->
-          <div class="flex items-center gap-2 pb-2.5 border-b border-dark-400">
-            <span class="w-2.5 h-2.5 rounded-full bg-red-500/70"></span>
-            <span class="w-2.5 h-2.5 rounded-full bg-amber-500/80"></span>
-            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500/80"></span>
-            <span class="ml-2 text-xs font-mono text-text-muted">REQUEST_PAYLOAD.json</span>
-          </div>
+              <!-- Campo: Email -->
+              <div>
+                <label for="emailInput" class="font-mono text-[11px] font-bold uppercase tracking-[0.12em] mb-2 block text-text-bright">
+                  Correo Electrónico
+                </label>
+                <input
+                  id="emailInput"
+                  v-model="email"
+                  type="email"
+                  placeholder="alex@ejemplo.com"
+                  class="w-full rounded-md border px-4 py-3 font-sans text-sm outline-none transition-colors contact-input"
+                  required
+                />
+              </div>
 
-          <!-- Visor JSON -->
-          <pre class="rounded-xl p-4 text-xs leading-relaxed font-mono overflow-x-auto border border-dark-400 bg-dark-800 text-text-base flex-grow"><span class="text-accent">{</span>
-    <span class="text-primary font-semibold">"endpoint"</span>: <span class="text-emerald-500 font-medium">"{{ formulario.endpoint }}"</span>,
-    <span class="text-primary font-semibold">"metodo"</span>: <span class="text-emerald-500 font-medium">"{{ formulario.metodo }}"</span>,
-    <span class="text-primary font-semibold">"cuerpo"</span>: <span class="text-accent">{</span>
-      <span class="text-primary font-semibold">"nombre"</span>: <span class="text-emerald-500 font-medium">"{{ formulario.cuerpo.nombre }}"</span>,
-      <span class="text-primary font-semibold">"email"</span>: <span class="text-emerald-500 font-medium">"{{ formulario.cuerpo.email }}"</span>,
-      <span class="text-primary font-semibold">"mensaje"</span>: <span class="text-emerald-500 font-medium">"{{ formulario.cuerpo.mensaje.replace(/\n/g, '\\n') }}"</span>
-    <span class="text-accent">}</span>
-<span class="text-accent">}</span></pre>
+              <!-- Campo: Mensaje -->
+              <div>
+                <label for="mensajeInput" class="font-mono text-[11px] font-bold uppercase tracking-[0.12em] mb-2 block text-text-bright">
+                  Detalles del Proyecto
+                </label>
+                <textarea
+                  id="mensajeInput"
+                  v-model="mensaje"
+                  rows="4"
+                  placeholder="Describe brevemente tus requerimientos técnicos, metas o plazos estimados..."
+                  class="w-full rounded-md border px-4 py-3 font-sans text-sm outline-none transition-colors contact-input resize-none"
+                  required
+                ></textarea>
+              </div>
 
-          <!-- Terminal de Logs -->
-          <div class="rounded-xl border border-dark-400 overflow-hidden bg-dark-800">
-            <div class="px-3.5 py-2 border-b border-dark-400 flex items-center justify-between">
-              <span class="text-[11px] font-mono text-text-muted">SYSTEM_LOGS</span>
-              <span
-                class="w-2 h-2 rounded-full transition-colors"
-                :class="estado === 'ENVIADO' ? 'bg-emerald-500' : estado === 'ERROR' ? 'bg-red-500' : 'bg-primary'"
-              ></span>
-            </div>
-            <div class="p-3.5 min-h-[60px] flex flex-col justify-end gap-1">
-              <p v-if="logTerminal.length === 0" class="font-mono text-xs text-text-muted animate-pulse">
-                > Esperando transmisión...
-              </p>
-              <p
-                v-for="(log, i) in logTerminal"
-                :key="i"
-                class="font-mono text-xs"
-                :class="log.tipo === 'error' ? 'text-red-500' : log.tipo === 'exito' ? 'text-emerald-500' : 'text-text-muted'"
+              <!-- Banner de Feedback Profesional -->
+              <div
+                v-if="mensajeFeedback"
+                class="rounded-md px-4 py-3 text-xs font-sans font-medium border flex items-center gap-2"
+                :class="{
+                  'bg-emerald-500/10 border-emerald-500/30 text-emerald-500': feedbackTipo === 'exito',
+                  'bg-red-500/10 border-red-500/30 text-red-500': feedbackTipo === 'error',
+                  'bg-blue-500/10 border-blue-500/30 text-blue-400': feedbackTipo === 'info'
+                }"
               >
-                {{ log.msg }}
-              </p>
-            </div>
-          </div>
+                <span v-if="feedbackTipo === 'exito'">✓</span>
+                <span v-else-if="feedbackTipo === 'error'">⚠</span>
+                <span v-else>ℹ</span>
+                <span>{{ mensajeFeedback }}</span>
+              </div>
 
+              <!-- Botón de Envío -->
+              <div class="pt-2">
+                <button
+                  type="submit"
+                  :disabled="estado === 'ENVIANDO'"
+                  class="btn-primary inline-flex items-center justify-center gap-2 font-sans font-bold text-xs sm:text-sm uppercase tracking-wider px-6 py-3 rounded-md cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed transition-all"
+                >
+                  <span>{{ etiquetaBoton() }}</span>
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                  </svg>
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
 
       </div>
 
     </div>
 
-    <!-- PIE DE PÁGINA (Alineado con el mismo contenedor) -->
-    <div class="border-t border-dark-400 py-6 bg-dark-800">
-      <div class="w-full max-w-6xl md:max-w-7xl mx-auto pl-10 pr-5 sm:px-8 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+    <!-- Franja Final de Pie de Página (Bottom Bar) -->
+    <div class="footer-bottom-bar border-t py-6 transition-colors">
+      <div class="w-full max-w-7xl mx-auto pl-10 pr-5 sm:px-8 md:px-12 lg:px-16 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <!-- Copyright -->
         <p class="text-xs font-mono text-text-muted text-center sm:text-left">
-          &copy; {{ anioActual }} <span class="text-primary font-medium">Tapia Tech</span>. Todos los derechos reservados.
+          &copy; {{ anioActual }} Jhon Eligio Tapia Vargas
         </p>
-        <div class="flex items-center gap-4 text-xs font-mono text-text-muted">
-          <a href="https://github.com/ElTapiaGit" target="_blank" rel="noopener" class="transition-colors hover:text-primary">
-            GitHub
-          </a>
-          <span class="text-dark-400">·</span>
-          <a href="https://linkedin.com/in/jhon-e-tapia-vargas-068b6a3ba" target="_blank" rel="noopener" class="transition-colors hover:text-primary">
-            LinkedIn
-          </a>
-          <span class="text-dark-400">·</span>
-          <a href="mailto:tapiajhon111@gmail.com" class="transition-colors hover:text-primary">
-            Correo
-          </a>
-        </div>
+
+        <!-- Botón Volver Arriba -->
+        <button
+          type="button"
+          @click="volverArriba"
+          class="inline-flex items-center gap-1.5 text-xs font-mono text-text-muted hover:text-primary transition-colors cursor-pointer"
+        >
+          <span>Volver arriba ↑</span>
+        </button>
       </div>
     </div>
   </footer>
 </template>
+
+<style scoped>
+/* ── Superficie de la Sección ── */
+.footer-section.is-dark {
+  background-color: var(--color-dark);
+}
+.footer-section.is-light {
+  background-color: #F8FAFC;
+}
+
+/* ── Marca de Agua Estructural ── */
+.is-dark .footer-watermark {
+  color: rgba(248, 250, 252, 0.035);
+}
+.is-light .footer-watermark {
+  color: rgba(15, 23, 42, 0.055);
+}
+
+/* ── Tarjetas de Contacto Directo ── */
+.is-dark .contact-card {
+  background-color: var(--color-dark-800);
+  border-color: var(--color-dark-400);
+}
+.is-dark .contact-card:hover {
+  border-color: var(--color-primary);
+}
+
+.is-light .contact-card {
+  background-color: #FFFFFF;
+  border-color: #CBD5E1;
+  box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.04);
+}
+.is-light .contact-card:hover {
+  border-color: var(--color-primary);
+  box-shadow: 0 8px 20px -4px rgba(37, 99, 235, 0.12);
+}
+
+/* ── Panel de Formulario ── */
+.is-dark .contact-panel {
+  background-color: var(--color-dark-800);
+  border-color: var(--color-dark-400);
+  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
+}
+.is-light .contact-panel {
+  background-color: #FFFFFF;
+  border-color: #CBD5E1;
+  box-shadow: 0 12px 30px -10px rgba(15, 23, 42, 0.07);
+}
+
+/* ── Inputs y Textareas ── */
+.is-dark .contact-input {
+  background-color: var(--color-dark-700);
+  border-color: var(--color-dark-400);
+  color: var(--text-bright);
+}
+.is-dark .contact-input:focus {
+  border-color: var(--color-primary);
+  background-color: var(--color-dark-800);
+}
+.is-dark .contact-input::placeholder {
+  color: rgba(148, 163, 184, 0.4);
+}
+
+.is-light .contact-input {
+  background-color: #F8FAFC;
+  border-color: #CBD5E1;
+  color: #0F172A;
+}
+.is-light .contact-input:focus {
+  border-color: var(--color-primary);
+  background-color: #FFFFFF;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+.is-light .contact-input::placeholder {
+  color: #94A3B8;
+}
+
+/* ── Franja Inferior (Bottom Bar) ── */
+.is-dark .footer-bottom-bar {
+  background-color: var(--color-dark-800);
+  border-color: var(--color-dark-400);
+}
+.is-light .footer-bottom-bar {
+  background-color: #FFFFFF;
+  border-color: #E2E8F0;
+}
+</style>

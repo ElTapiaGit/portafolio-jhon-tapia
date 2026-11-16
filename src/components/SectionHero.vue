@@ -17,7 +17,7 @@ const projectBtnRef = ref(null)
 const NAME_LINES = ['JHON ELIGIO', 'TAPIA VARGAS']
 const ROLE_TEXT = 'Ingeniero de Sistemas & Desarrollador Full Stack'
 const DESCRIPTION = 'Arquitectura de software, aplicaciones móviles y sistemas web de alto rendimiento.'
-const IMAGE_SRC = '/asset/images/perfil-2.png'
+const IMAGE_SRC = '/asset/images/perfil-2.webp'
 
 const SOCIALS = [
   {
@@ -137,7 +137,7 @@ onUnmounted(() => {
   <section
     id="hero"
     ref="heroRef"
-    class="relative h-screen min-h-[680px] max-h-[1080px] w-full overflow-hidden bg-dark select-none flex flex-col justify-between"
+    class="relative h-screen min-h-[680px] w-full overflow-hidden bg-dark select-none flex flex-col justify-between"
     aria-label="Sección principal — Presentación"
     @mousemove="handleMouseMove"
     @mouseleave="handleMouseLeave"

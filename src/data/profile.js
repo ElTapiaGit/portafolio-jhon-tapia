@@ -4,22 +4,21 @@
    ═══════════════════════════════════════════════════════════ */
 
 export const dbData = {
-  consulta: 'SELECT * FROM educacion WHERE estado = activo',
   resultado: {
     institucion: 'Universidad Latinoamericana',
     titulo: 'Ingeniería de Sistemas',
     estado: 'Egresado',
     ubicacion: 'Cochabamba, BO',
-    enfoque: 'Desarrollo Full Stack',
+    enfoque: 'Desarrollo Full Stack & Arquitectura',
   },
 }
 
 export const filosofias = [
-  'Arquitectura Limpia como pilar de diseño de sistemas',
-  'Rendimiento sobre complejidad innecesaria',
-  'Código mantenible y escalable por defecto',
-  'Desarrollo orientado al producto y al usuario final',
-  'Integración continua y entrega iterativa de valor',
+  'Arquitectura Limpia como pilar innegociable de diseño de sistemas.',
+  'Rendimiento, auditabilidad y robustez sobre complejidad innecesaria.',
+  'Código tipado, testeable, mantenible y escalable por defecto.',
+  'Desarrollo centrado en resolver lógica de negocio y experiencia del usuario.',
+  'Entrega continua, despliegues reproducibles y monitoreo constante.',
 ]
 
 export const pestanas = [
@@ -29,10 +28,20 @@ export const pestanas = [
 ]
 
 export const capacidades = [
-  'Desarrollo Full Stack',
+  'Desarrollo Full Stack Web',
   'Apps Móviles Flutter',
-  'APIs RESTful',
-  'Sistemas POS',
-  'Arquitectura Limpia',
-  'Bases de Datos SQL/NoSQL'
+  'APIs RESTful & Microservicios',
+  'Sistemas POS & Transaccionales',
+  'Arquitectura Limpia & SOLID',
+  'Bases de Datos SQL & NoSQL',
+]
+
+export const ecosistema = [
+  'Flutter',
+  'Vue 3',
+  'Node.js',
+  'Laravel',
+  'PostgreSQL',
+  'MongoDB',
+  'Tailwind CSS',
 ]

@@ -1,18 +1,31 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { categorias, proyectos } from '../data/projects.js'
 import ProjectCard from './projects/ProjectCard.vue'
 import ProjectModal from './projects/ProjectModal.vue'
+import { useTheme } from '../composables/useTheme.js'
+
+gsap.registerPlugin(ScrollTrigger)
+
+const { isDark } = useTheme()
 
 /* ── Referencias del DOM ── */
 const sectionRef = ref(null)
+const kickerRef = ref(null)
+const lineRef = ref(null)
+const titleRef = ref(null)
+const filtersRef = ref(null)
 const cardsContainer = ref(null)
 
 /* ── Estado Reactivo ── */
 const mostrarTodos = ref(false)
 const categoriaActiva = ref('Todos')
 const proyectoSeleccionado = ref(null)
+
+/* ── Contexto GSAP ── */
+let ctx = null
 
 /* ── Filtrado Reactivo ── */
 const proyectosFiltrados = computed(() => {
@@ -28,7 +41,19 @@ const proyectosFiltrados = computed(() => {
 
 function toggleProyectos() {
   mostrarTodos.value = !mostrarTodos.value
-  nextTick(() => animarTarjetas())
+  nextTick(() => {
+    if (mostrarTodos.value && cardsContainer.value) {
+      const cards = Array.from(cardsContainer.value.querySelectorAll('.proyecto-card'))
+      const nuevasCards = cards.slice(4)
+      if (nuevasCards.length) {
+        gsap.fromTo(nuevasCards,
+          { opacity: 0, y: 24 },
+          { opacity: 1, y: 0, duration: 0.4, stagger: 0.08, ease: 'power3.out', clearProps: 'transform' }
+        )
+      }
+    }
+    ScrollTrigger.refresh()
+  })
 }
 
 function conteoPorCategoria(cat) {
@@ -39,17 +64,20 @@ function conteoPorCategoria(cat) {
 function cambiarCategoria(cat) {
   if (categoriaActiva.value === cat) return
   categoriaActiva.value = cat
-  nextTick(() => animarTarjetas())
+  nextTick(() => {
+    animarTarjetas()
+    ScrollTrigger.refresh()
+  })
 }
 
-/* ── Animación GSAP de Tarjetas ── */
+/* ── Re-animación Suave de Tarjetas (Filtro) ── */
 function animarTarjetas() {
   if (!cardsContainer.value) return
   const cards = cardsContainer.value.querySelectorAll('.proyecto-card')
   if (!cards.length) return
   gsap.fromTo(cards,
-    { opacity: 0, y: 16 },
-    { opacity: 1, y: 0, duration: 0.32, stagger: 0.05, ease: 'power2.out', clearProps: 'transform' }
+    { opacity: 0, y: 14 },
+    { opacity: 1, y: 0, duration: 0.28, stagger: 0.04, ease: 'power2.out', clearProps: 'transform', overwrite: 'auto' }
   )
 }
 
@@ -61,26 +89,48 @@ function cerrarCasoEstudio() {
   proyectoSeleccionado.value = null
 }
 
-let observer = null
-
 onMounted(() => {
-  if ('IntersectionObserver' in window && sectionRef.value) {
-    observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          animarTarjetas()
-          observer?.disconnect()
-        }
-      })
-    }, { threshold: 0.1 })
-    observer.observe(sectionRef.value)
-  } else {
-    animarTarjetas()
-  }
+  ctx = gsap.context(() => {
+    // 1. Estados iniciales ocultos
+    gsap.set(kickerRef.value, { opacity: 0, x: -16 })
+    gsap.set(lineRef.value, { scaleX: 0 })
+    gsap.set(titleRef.value, { yPercent: 110 })
+    gsap.set(filtersRef.value, { opacity: 0, y: 20 })
+
+    const cards = cardsContainer.value?.querySelectorAll('.proyecto-card')
+    if (cards && cards.length) {
+      gsap.set(cards, { opacity: 0, y: 36 })
+    }
+
+    // 2. Timeline sincronizada con ScrollTrigger
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: sectionRef.value,
+        start: 'top 62%',
+        toggleActions: 'play none none reverse'
+      }
+    })
+
+    tl.to(kickerRef.value, { opacity: 1, x: 0, duration: 0.45, ease: 'power2.out' }, 0)
+      .to(lineRef.value, { scaleX: 1, duration: 0.75, ease: 'power3.inOut' }, 0.05)
+      .to(titleRef.value, { yPercent: 0, duration: 0.8, ease: 'power4.out' }, 0.1)
+      .to(filtersRef.value, { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' }, 0.25)
+
+    if (cards && cards.length) {
+      tl.to(cards, {
+        opacity: 1,
+        y: 0,
+        duration: 0.65,
+        stagger: 0.12,
+        ease: 'power3.out',
+        clearProps: 'transform'
+      }, 0.32)
+    }
+  }, sectionRef.value)
 })
 
 onUnmounted(() => {
-  if (observer) observer.disconnect()
+  ctx?.revert()
 })
 </script>
 
@@ -88,30 +138,49 @@ onUnmounted(() => {
   <section
     id="proyectos"
     ref="sectionRef"
-    class="relative bg-dark text-white py-10 md:py-16 w-full scroll-mt-4 md:scroll-mt-6"
+    class="relative w-full projects-section border-b border-dark-400 overflow-hidden transition-colors scroll-mt-0 py-16 md:py-24 lg:py-28"
+    :class="isDark ? 'is-dark' : 'is-light'"
     aria-label="Sección — Proyectos"
   >
-    <div class="relative z-10 w-full max-w-6xl md:max-w-7xl mx-auto pl-10 pr-5 sm:px-8 lg:px-8">
+    <!-- Marca de Agua Estructural (02) -->
+    <span
+      aria-hidden="true"
+      class="projects-watermark absolute -top-6 right-4 md:right-12 font-sans font-black text-[9rem] sm:text-[13rem] md:text-[17rem] leading-none tracking-tighter select-none pointer-events-none z-0"
+    >
+      02
+    </span>
 
-      <!-- Encabezado de la Sección -->
-      <div class="mb-8 w-full">
-        <span class="status-badge mb-3">Portafolio</span>
-        <h2 class="text-3xl lg:text-4xl font-bold mt-3 text-text-bright">Proyectos</h2>
+    <!-- Contenedor Principal -->
+    <div class="relative z-10 w-full max-w-7xl mx-auto pl-10 pr-5 sm:px-8 md:px-12 lg:px-16">
+
+      <!-- Encabezado Brutalista -->
+      <div class="mb-8 md:mb-10">
+        <div class="flex items-center gap-4 mb-3">
+          <span ref="kickerRef" class="font-mono text-xs sm:text-sm font-semibold uppercase tracking-[0.2em] text-primary">
+            02 — Casos de Estudio &amp; Producción
+          </span>
+          <div ref="lineRef" class="h-px flex-1 bg-dark-400 origin-left"></div>
+        </div>
+        <div class="overflow-hidden py-1">
+          <h2 ref="titleRef" class="font-sans font-black uppercase tracking-[-0.03em] text-3xl sm:text-5xl lg:text-6xl leading-[0.95] text-text-bright">
+            PROYECTOS DESTACADOS
+          </h2>
+        </div>
       </div>
 
-      <!-- Filtro por Categorías -->
-      <div class="flex items-center gap-2 overflow-x-auto pb-2 mb-8 no-scrollbar">
+      <!-- Barra de Filtros Editorial -->
+      <div ref="filtersRef" class="flex items-center gap-2.5 overflow-x-auto pb-4 mb-8 md:mb-10 no-scrollbar">
         <button
           v-for="cat in categorias"
           :key="cat"
           type="button"
           @click="cambiarCategoria(cat)"
-          class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono transition-all duration-200 border cursor-pointer"
-          :class="categoriaActiva === cat ? 'filter-chip-active shadow-sm' : 'filter-chip-inactive'"
+          class="filter-btn inline-flex items-center gap-2 px-3.5 py-1.5 rounded text-xs font-mono uppercase tracking-wider transition-all duration-200 border cursor-pointer shrink-0"
+          :class="categoriaActiva === cat ? 'filter-btn-active' : 'filter-btn-inactive'"
         >
           <span>{{ cat }}</span>
           <span
-            class="filter-counter text-[10px] px-1.5 py-0.5 rounded-full font-sans leading-none"
+            class="filter-counter text-[10px] px-1.5 py-0.5 rounded font-mono leading-none"
             :class="categoriaActiva === cat ? 'filter-counter-active' : 'filter-counter-inactive'"
           >
             {{ conteoPorCategoria(cat) }}
@@ -122,7 +191,7 @@ onUnmounted(() => {
       <!-- Grilla de Tarjetas -->
       <div
         ref="cardsContainer"
-        class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 w-full"
+        class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-10 w-full"
       >
         <ProjectCard
           v-for="(proyecto, idx) in proyectosFiltrados"
@@ -133,13 +202,13 @@ onUnmounted(() => {
       </div>
 
       <!-- Botón Cargar Más Proyectos -->
-      <div v-if="categoriaActiva === 'Todos' && proyectos.length > 4" class="mt-14 w-full flex justify-center">
+      <div v-if="categoriaActiva === 'Todos' && proyectos.length > 4" class="mt-12 md:mt-16 w-full flex justify-center">
         <button 
           type="button"
           @click="toggleProyectos"
-          class="btn-secondary transition-all duration-300"
+          class="load-more-btn inline-flex items-center gap-2.5 px-6 py-3 rounded-md text-xs font-mono uppercase tracking-wider font-semibold border transition-all duration-300 cursor-pointer"
         >
-          {{ mostrarTodos ? 'Ocultar proyectos' : 'Cargar más proyectos' }}
+          <span>{{ mostrarTodos ? 'Mostrar menos proyectos' : 'Cargar más proyectos' }}</span>
           <svg 
             class="w-4 h-4 transition-transform duration-300" 
             :class="{'rotate-180': mostrarTodos}" 
@@ -161,6 +230,24 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
+/* ── Plano de Superficie Base ── */
+.projects-section.is-dark {
+  background-color: var(--color-dark);
+}
+
+.projects-section.is-light {
+  background-color: #F8FAFC;
+}
+
+/* ── Marca de Agua Estructural ── */
+.is-dark .projects-watermark {
+  color: rgba(248, 250, 252, 0.035);
+}
+
+.is-light .projects-watermark {
+  color: rgba(15, 23, 42, 0.055);
+}
+
 /* ── Scrollbars ── */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
@@ -171,9 +258,9 @@ onUnmounted(() => {
 }
 
 /* ── Filtros por Categoría ── */
-.filter-chip-active {
+.filter-btn-active {
   background-color: var(--color-primary);
-  border: 1px solid var(--color-primary);
+  border-color: var(--color-primary);
   color: #FFFFFF !important;
   font-weight: 600;
 }
@@ -182,17 +269,55 @@ onUnmounted(() => {
   color: #FFFFFF;
 }
 
-.filter-chip-inactive {
-  border: 1px solid var(--color-dark-400);
+.is-dark .filter-btn-inactive {
+  border-color: var(--color-dark-400);
   background-color: var(--color-dark-800);
   color: var(--text-muted);
 }
-.filter-chip-inactive:hover {
+.is-dark .filter-btn-inactive:hover {
+  border-color: var(--color-primary);
+  color: var(--text-bright);
+}
+.is-dark .filter-counter-inactive {
+  background-color: var(--color-dark-700);
+  color: var(--text-muted);
+}
+
+.is-light .filter-btn-inactive {
+  background-color: #FFFFFF;
+  border-color: #CBD5E1;
+  color: #475569;
+}
+.is-light .filter-btn-inactive:hover {
+  border-color: var(--color-primary);
+  color: #0F172A;
+}
+.is-light .filter-counter-inactive {
+  background-color: #F1F5F9;
+  color: #64748B;
+}
+
+/* ── Botón Cargar Más ── */
+.is-dark .load-more-btn {
+  background-color: var(--color-dark-800);
+  border-color: var(--color-dark-400);
+  color: var(--text-bright);
+}
+.is-dark .load-more-btn:hover {
+  background-color: var(--color-dark-700);
   border-color: var(--color-primary);
   color: var(--color-primary);
 }
-.filter-counter-inactive {
-  background-color: var(--color-dark-700);
-  color: var(--text-muted);
+
+.is-light .load-more-btn {
+  background-color: #FFFFFF;
+  border-color: #CBD5E1;
+  color: #0F172A;
+  box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.05);
+}
+.is-light .load-more-btn:hover {
+  background-color: #F8FAFC;
+  border-color: var(--color-primary);
+  color: var(--color-primary);
 }
 </style>
