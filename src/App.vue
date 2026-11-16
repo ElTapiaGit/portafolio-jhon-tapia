@@ -11,6 +11,10 @@
 
 import { onMounted, onUnmounted } from 'vue'
 import Lenis from 'lenis'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+
+gsap.registerPlugin(ScrollTrigger)
 
 /* ── Importación de Secciones ─── */
 import ControlPanel from './components/ControlPanel.vue'
@@ -22,12 +26,13 @@ import TheFooter from './components/TheFooter.vue'
 
 /* ── Estado del Motor de Scroll ── */
 let lenisInstance = null
-let rafId = null
+
+const updateLenis = (time) => {
+  lenisInstance?.raf(time * 1000)
+}
 
 onMounted(() => {
-  /* Inicialización de Lenis — Motor de scroll suave global.
-     Se configura con duración e interpolación personalizadas
-     para lograr un desplazamiento fluido y cinematográfico. */
+  /* Inicialización de Lenis — Motor de scroll suave global sincronizado con GSAP ScrollTrigger. */
   lenisInstance = new Lenis({
     duration: 1.2,
     easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -38,22 +43,17 @@ onMounted(() => {
     touchMultiplier: 2,
   })
 
-  /* Bucle de animación — Conecta Lenis al ciclo de renderizado
-     del navegador usando requestAnimationFrame. */
-  function raf(time) {
-    lenisInstance.raf(time)
-    rafId = requestAnimationFrame(raf)
-  }
+  // Sincronizar Lenis con GSAP ScrollTrigger
+  lenisInstance.on('scroll', ScrollTrigger.update)
 
-  rafId = requestAnimationFrame(raf)
+  // Conectar Lenis al ticker global de GSAP
+  gsap.ticker.add(updateLenis)
+  gsap.ticker.lagSmoothing(0)
 })
 
 onUnmounted(() => {
-  /* Limpieza de recursos — Cancela el bucle de animacion. */
-  if (rafId) {
-    cancelAnimationFrame(rafId)
-    rafId = null
-  }
+  // Limpieza del ticker y motor de scroll
+  gsap.ticker.remove(updateLenis)
 
   if (lenisInstance) {
     lenisInstance.destroy()
