@@ -9,7 +9,7 @@ export const dbData = {
     titulo: 'Ingeniería de Sistemas',
     estado: 'Egresado',
     ubicacion: 'Cochabamba, BO',
-    enfoque: 'Desarrollo Full Stack & Arquitectura',
+    enfoque: 'Desarrollo Full Stack & Mobile',
   },
 }
 
@@ -31,7 +31,7 @@ export const capacidades = [
   'Desarrollo Full Stack Web',
   'Apps Móviles Flutter',
   'APIs RESTful & Microservicios',
-  'Sistemas POS & Transaccionales',
+  'Sistemas de Gestión & Pagos QR',
   'Arquitectura Limpia & SOLID',
   'Bases de Datos SQL & NoSQL',
 ]
@@ -40,6 +40,7 @@ export const ecosistema = [
   'Flutter',
   'Vue 3',
   'Node.js',
+  'TypeScript',
   'Laravel',
   'PostgreSQL',
   'MongoDB',

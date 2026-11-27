@@ -20,7 +20,7 @@ export const nodosData = [
     id: 'Node', group: 2, label: 'Node.js', icono: '/asset/icons/node.svg',
     tipo: 'Backend & APIs',
     descripcion: 'Servicios RESTful, WebSockets asíncronos y orquestación de pipelines RAG locales.',
-    proyectos: ['Enterprise RAG Core', 'RetoChat']
+    proyectos: ['Enterprise RAG Core', 'Notifier API']
   },
   { 
     id: 'Laravel', group: 2, label: 'Laravel', icono: '/asset/icons/laravel.svg',
@@ -32,7 +32,7 @@ export const nodosData = [
     id: 'PostgreSQL', group: 2, label: 'PostgreSQL', icono: '/asset/icons/postgresql.svg',
     tipo: 'Database & Vector Search',
     descripcion: 'Almacenamiento relacional normalizado y búsqueda semántica de alta velocidad con pgvector.',
-    proyectos: ['Enterprise RAG Core', 'RetoChat']
+    proyectos: ['Enterprise RAG Core', 'Notifier API', 'CosechApp']
   },
   { 
     id: 'MySQL', group: 2, label: 'MySQL', icono: '/asset/icons/mysql.svg',
@@ -44,7 +44,7 @@ export const nodosData = [
     id: 'MongoDB', group: 2, label: 'MongoDB', icono: '/asset/icons/mongodb.svg',
     tipo: 'NoSQL Document Store',
     descripcion: 'Almacenamiento de documentos JSON flexible para esquemas no relacionales y telemetría.',
-    proyectos: ['Supermarket Backend API']
+    proyectos: ['Proyectos personales / NoSQL']
   },
   { 
     id: 'PHP', group: 2, label: 'PHP', icono: '/asset/icons/php.svg',

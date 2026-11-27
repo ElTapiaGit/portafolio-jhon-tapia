@@ -16,59 +16,9 @@ export function obtenerClasesEstado(tipo) {
 
 export const proyectos = [
   {
-    id: 'ulat-inventory',
-    titulo: 'Sistema Inventario Institucional - ULAT',
-    descripcion: 'Plataforma web para la gestión integral de activos, infraestructura multisede, bitácoras de mantenimiento y control de roles.',
-    estado: 'Implementado',
-    tipoEstado: 'terminado',
-    rol: 'Desarrollador Full Stack',
-    stack: ['Laravel', 'MySQL', 'Bootstrap', 'Blade'],
-    repo: 'https://github.com/ElTapiaGit/inventorySedes.git',
-    arquitectura: 'MVC / RBAC',
-    imagen: '/asset/images/banner-ulat.webp',
-    categoria: 'Web',
-    problem: 'Pérdida de trazabilidad de activos físicos y dificultades en auditorías entre sedes universitarias debido a registros manuales.',
-    architecture: 'Arquitectura MVC en Laravel con control de acceso basado en roles (RBAC) y registro de auditoría de transacciones.',
-    keyHighlights: [
-      'Control de accesos multi-rol con validaciones en middleware para operaciones sensibles.',
-      'Módulo de transferencias inter-sedes con confirmación de recepción y trazabilidad de custodia.',
-      'Generación y exportación de reportes de inventario valorado en PDF y Excel.'
-    ],
-    links: {
-      github: 'https://github.com/ElTapiaGit/inventorySedes.git',
-      playstore: null,
-      live: null
-    }
-  },
-  {
-    id: 'cosechapp',
-    titulo: 'CosechApp - Control Agrónomo',
-    descripcion: 'Aplicación móvil offline-first para gestión de cosechas, registro de pesajes en campo y generación de planillas Excel en el dispositivo.',
-    estado: 'Finalizado',
-    tipoEstado: 'terminado',
-    rol: 'Desarrollador Flutter',
-    stack: ['Flutter', 'Supabase', 'Hive', 'GoRouter'],
-    repo: 'https://github.com/ElTapiaGit/cosechapp-analytics.git',
-    arquitectura: 'MVVM / Clean Architecture',
-    imagen: '/asset/images/banner-cosechapp.webp',
-    categoria: 'Móvil',
-    problem: 'Falta de conectividad celular en zonas agrícolas remotas, lo que impedía el registro directo de pesajes y lotes cosechados.',
-    architecture: 'Patrón MVVM en Flutter con almacenamiento local en Hive y sincronización asíncrona hacia Supabase al detectar red.',
-    keyHighlights: [
-      'Persistencia local-first para operar sin conexión durante toda la jornada de campo.',
-      'Exportación de planillas Excel y reportes consolidados directamente desde el dispositivo.',
-      'Sincronización automática de datos pendientes al restablecerse la conexión a internet.'
-    ],
-    links: {
-      github: 'https://github.com/ElTapiaGit/cosechapp-analytics.git',
-      playstore: null,
-      live: null
-    }
-  },
-  {
     id: 'finance-local',
     titulo: 'Finance Local - Finanzas Personales',
-    descripcion: 'Aplicación móvil offline-first para control financiero personal con almacenamiento 100% local, sin servidores externos ni cuentas obligatorias.',
+    descripcion: 'Aplicación móvil offline-first publicada en Google Play con adopción orgánica en 7 países. Almacenamiento 100% local en Hive y cero dependencia de servidores.',
     estado: 'Publicado',
     tipoEstado: 'terminado',
     rol: 'Desarrollador Flutter',
@@ -81,12 +31,37 @@ export const proyectos = [
     architecture: 'Clean Architecture en Flutter con base de datos NoSQL embebida (Hive) para lectura y escritura instantánea.',
     keyHighlights: [
       'Persistencia 100% local en el dispositivo para garantizar privacidad absoluta.',
-      'Cálculo reactivo de balances, presupuestos y resúmenes mensuales.',
-      'Automatización de pruebas y publicación en la tienda de Google Play Store.'
+      'Cálculo reactivo de balances, presupuestos y resúmenes mensuales sin latencia de red.',
+      'Publicada en Google Play Store con adopción orgánica de 18 usuarios activos en 7 países (Argentina, Bolivia, Chile, Colombia, España, México y Perú).'
     ],
     links: {
       github: 'https://github.com/ElTapiaGit/finance-local-app.git',
       playstore: 'https://play.google.com/store/apps/details?id=com.eltapiadev.finances&pcampaignid=web_share',
+      live: null
+    }
+  },
+  {
+    id: 'cosechapp',
+    titulo: 'CosechApp - Control Agrónomo',
+    descripcion: 'Sistema agroindustrial offline-first en Flutter y Supabase. Optimiza la importación de planillas de 2 horas a 10 segundos y la consolidación de reportes de 4-8 horas a <3 segundos.',
+    estado: 'Finalizado',
+    tipoEstado: 'terminado',
+    rol: 'Desarrollador Flutter',
+    stack: ['Flutter', 'Supabase', 'Hive', 'GoRouter'],
+    repo: 'https://github.com/ElTapiaGit/cosechapp-analytics.git',
+    arquitectura: 'MVVM / Clean Architecture',
+    imagen: '/asset/images/banner-cosechapp.webp',
+    categoria: 'Móvil',
+    problem: 'Falta de conectividad celular en zonas agrícolas remotas, lo que impedía el registro directo de pesajes y lotes cosechados.',
+    architecture: 'Patrón MVVM en Flutter con almacenamiento local en Hive y sincronización asíncrona hacia Supabase al detectar red.',
+    keyHighlights: [
+      'Persistencia local-first con Hive para operar sin conexión en parcelas agrícolas aisladas.',
+      'Backend Supabase con RPCs atómicas en PL/pgSQL, reduciendo la importación de planillas Excel de 2 horas a 10 segundos sin duplicados.',
+      'Automatización de reportes de proyección y salud de cartera, reduciendo la consolidación mensual de 4–8 horas a menos de 3 segundos.'
+    ],
+    links: {
+      github: 'https://github.com/ElTapiaGit/cosechapp-analytics.git',
+      playstore: null,
       live: null
     }
   },
@@ -111,6 +86,56 @@ export const proyectos = [
     ],
     links: {
       github: 'https://github.com/ElTapiaGit/RAG-Empresarial-Local.git',
+      playstore: null,
+      live: null
+    }
+  },
+  {
+    id: 'notifier-api',
+    titulo: 'Notifier API — Sistema Criptográfico OTP',
+    descripcion: 'Microservicio desacoplado para la generación, despacho y validación criptográfica de códigos de un solo uso (OTP) con control de expiración.',
+    estado: 'Finalizado',
+    tipoEstado: 'terminado',
+    rol: 'Backend Engineer',
+    stack: ['Node.js', 'TypeScript', 'Express', 'PostgreSQL'],
+    repo: 'https://github.com/ElTapiaGit/notifier-api',
+    arquitectura: 'Microservicio REST',
+    imagen: '/asset/images/notifier-api.webp',
+    categoria: 'Backend / IA',
+    problem: 'Necesidad de un sistema seguro, aislado y de alta disponibilidad para la generación criptográfica, despacho y verificación de códigos de un solo uso (OTP) a través de múltiples plataformas.',
+    architecture: 'Microservicio desacoplado construido en Node.js y Express con TypeScript estricto, respaldado por PostgreSQL para el control de integridad, transacciones y validación de expiración temporal.',
+    keyHighlights: [
+      'Generación segura y verificación criptográfica de tokens OTP.',
+      'Control riguroso de tiempos de expiración para prevenir ataques de repetición.',
+      'Arquitectura tipada y modular lista para ser consumida como microservicio por otros sistemas del ecosistema.'
+    ],
+    links: {
+      github: 'https://github.com/ElTapiaGit/notifier-api',
+      playstore: null,
+      live: null
+    }
+  },
+  {
+    id: 'ulat-inventory',
+    titulo: 'Sistema Inventario Institucional - ULAT',
+    descripcion: 'Plataforma web para la gestión integral de activos, infraestructura multisede, bitácoras de mantenimiento y control de roles.',
+    estado: 'Implementado',
+    tipoEstado: 'terminado',
+    rol: 'Desarrollador Full Stack',
+    stack: ['Laravel', 'MySQL', 'Bootstrap', 'Blade'],
+    repo: 'https://github.com/ElTapiaGit/inventorySedes.git',
+    arquitectura: 'MVC / RBAC',
+    imagen: '/asset/images/banner-ulat.webp',
+    categoria: 'Web',
+    problem: 'Pérdida de trazabilidad de activos físicos y dificultades en auditorías entre sedes universitarias debido a registros manuales.',
+    architecture: 'Arquitectura MVC en Laravel con control de acceso basado en roles (RBAC) y registro de auditoría de transacciones.',
+    keyHighlights: [
+      'Control de accesos multi-rol con validaciones en middleware para operaciones sensibles.',
+      'Módulo de transferencias inter-sedes con confirmación de recepción y trazabilidad de custodia.',
+      'Generación y exportación de reportes de inventario valorado en PDF y Excel.'
+    ],
+    links: {
+      github: 'https://github.com/ElTapiaGit/inventorySedes.git',
       playstore: null,
       live: null
     }
@@ -141,33 +166,9 @@ export const proyectos = [
     }
   },
   {
-    id: 'reto-chat',
-    titulo: 'Plataforma de Chat para Introvertidos',
-    descripcion: 'Aplicación web de mensajería en tiempo real con dinámicas de conversación estructuradas para facilitar la interacción paso a paso.',
-    estado: 'Finalizado',
-    tipoEstado: 'terminado',
-    rol: 'Desarrollador Web',
-    stack: ['HTML', 'Node.js', 'PostgreSQL', 'WebSockets'],
-    repo: 'https://github.com/ElTapiaGit/RetoChat.git',
-    arquitectura: 'Event-Driven / WebSockets',
-    imagen: '/asset/images/proyect-chat.webp',
-    categoria: 'Web',
-    problem: 'Abandono frecuente en salas de chat abiertas debido a la dificultad para iniciar o mantener conversaciones sin disparadores guiados.',
-    architecture: 'Servidor en Node.js con comunicación bidireccional vía WebSockets y base de datos relacional PostgreSQL.',
-    keyHighlights: [
-      'Comunicación en tiempo real con WebSockets para mensajería instantánea y presencia.',
-      'Salas con dinámicas de conversación estructuradas y temporizadores de interacción.',
-      'Persistencia de sesiones, perfiles y registros de actividad en PostgreSQL.'
-    ],
-    links: {
-      github: 'https://github.com/ElTapiaGit/RetoChat.git',
-      playstore: null,
-      live: null
-    }
-  },
-  {
     id: 'crm-whatsapp',
     titulo: 'CRM WhatsApp Agent — Producto Comercial',
+    descripcion: 'Plataforma SaaS para automatización comercial y atención al cliente en WhatsApp, con backend Fastify integrado a Meta Cloud API y panel SPA en Vue 3.',
     categoria: 'Web',
     estado: 'En Desarrollo',
     tipoEstado: 'desarrollo',
@@ -190,26 +191,26 @@ export const proyectos = [
     }
   },
   {
-    id: 'notifier-api',
-    titulo: 'Notifier API — Sistema Criptográfico OTP',
-    descripcion: 'Microservicio desacoplado para la generación, despacho y validación criptográfica de códigos de un solo uso (OTP) con control de expiración.',
+    id: 'reto-chat',
+    titulo: 'Plataforma de Chat para Introvertidos',
+    descripcion: 'Aplicación web de mensajería en tiempo real con dinámicas de conversación estructuradas para facilitar la interacción paso a paso.',
     estado: 'Finalizado',
     tipoEstado: 'terminado',
-    rol: 'Backend Engineer',
-    stack: ['Node.js', 'TypeScript', 'Express', 'PostgreSQL'],
-    repo: 'https://github.com/ElTapiaGit/notifier-api',
-    arquitectura: 'Microservicio REST',
-    imagen: '/asset/images/notifier-api.webp',
-    categoria: 'Backend / IA',
-    problem: 'Necesidad de un sistema seguro, aislado y de alta disponibilidad para la generación criptográfica, despacho y verificación de códigos de un solo uso (OTP) a través de múltiples plataformas.',
-    architecture: 'Microservicio desacoplado construido en Node.js y Express con TypeScript estricto, respaldado por PostgreSQL para el control de integridad, transacciones y validación de expiración temporal.',
+    rol: 'Desarrollador Web',
+    stack: ['HTML', 'Node.js', 'PostgreSQL', 'WebSockets'],
+    repo: 'https://github.com/ElTapiaGit/RetoChat.git',
+    arquitectura: 'Event-Driven / WebSockets',
+    imagen: '/asset/images/proyect-chat.webp',
+    categoria: 'Web',
+    problem: 'Abandono frecuente en salas de chat abiertas debido a la dificultad para iniciar o mantener conversaciones sin disparadores guiados.',
+    architecture: 'Servidor en Node.js con comunicación bidireccional vía WebSockets y base de datos relacional PostgreSQL.',
     keyHighlights: [
-      'Generación segura y verificación criptográfica de tokens OTP.',
-      'Control riguroso de tiempos de expiración para prevenir ataques de repetición.',
-      'Arquitectura tipada y modular lista para ser consumida como microservicio por otros sistemas del ecosistema.'
+      'Comunicación en tiempo real con WebSockets para mensajería instantánea y presencia.',
+      'Salas con dinámicas de conversación estructuradas y temporizadores de interacción.',
+      'Persistencia de sesiones, perfiles y registros de actividad en PostgreSQL.'
     ],
     links: {
-      github: 'https://github.com/ElTapiaGit/notifier-api',
+      github: 'https://github.com/ElTapiaGit/RetoChat.git',
       playstore: null,
       live: null
     }
