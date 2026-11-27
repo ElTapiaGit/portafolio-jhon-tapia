@@ -523,7 +523,7 @@ onUnmounted(() => {
                         {{ nodoSeleccionado.tipo }}
                       </span>
                       <span class="font-mono text-[11px] font-medium px-2 py-0.5 rounded border skill-badge-conns">
-                        {{ nodosConectados.length }} conexiones
+                        {{ nodosConectados.length }} {{ nodosConectados.length === 1 ? 'conexión' : 'conexiones' }}
                       </span>
                     </div>
                     <h3 class="font-sans text-xl sm:text-2xl font-black tracking-tight text-text-bright leading-none mt-1 truncate">
@@ -651,7 +651,7 @@ onUnmounted(() => {
                           {{ nodoSeleccionado.tipo }}
                         </span>
                         <span class="font-mono text-[11px] font-medium px-2.5 py-0.5 rounded border skill-badge-conns">
-                          {{ nodosConectados.length }} conexiones
+                          {{ nodosConectados.length }} {{ nodosConectados.length === 1 ? 'conexión' : 'conexiones' }}
                         </span>
                       </div>
                       <h3 class="font-sans text-2xl sm:text-[1.65rem] font-black tracking-tight text-text-bright leading-none mt-1 truncate">
@@ -717,7 +717,7 @@ onUnmounted(() => {
                 <div class="pt-5 border-t border-dark-400 mt-6 flex items-center justify-between text-xs font-mono text-text-muted">
                   <span>Ecosistema Interconectado</span>
                   <span class="flex items-center gap-1.5 text-text-bright font-medium">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Producción
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Ecosistema activo
                   </span>
                 </div>
               </div>

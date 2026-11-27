@@ -115,9 +115,7 @@ onUnmounted(() => {
             </p>
           </div>
           <div ref="metaRef" class="mt-8 pt-5 border-t border-dark-400 flex flex-wrap items-center gap-x-3 gap-y-2 font-mono text-xs text-text-muted">
-            <span class="flex items-center gap-2 text-text-bright font-medium">
-              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Sistemas en Producción
-            </span>
+            <span>Arquitectura &amp; Desarrollo</span>
             <span class="text-dark-400">·</span>
             <span>Full Stack &amp; Mobile</span>
             <span class="text-dark-400">·</span>
